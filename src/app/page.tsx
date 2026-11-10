@@ -25,7 +25,7 @@ export default async function HomePage() {
           <h1 className="wm-home-title">Find your place in the islands.</h1>
           <p className="wm-home-intro">A considered guide to verified resorts, hotels and guesthouses across the Maldives, one atoll at a time.</p>
           <div className="wm-home-actions">
-            <form action="/hotels" className="wm-home-search" method="get"><label className="sr-only" htmlFor="atlas-search">Search a property, island or atoll</label><input className="wm-input min-w-0 flex-1" id="atlas-search" name="q" placeholder="Search a property name" type="search" /><button className="wm-button" type="submit">Explore stays <span aria-hidden="true">↗</span></button></form>
+            <form action="/hotels" className="wm-home-search" method="get"><label className="sr-only" htmlFor="atlas-search">Search a property name</label><input className="wm-input min-w-0 flex-1" id="atlas-search" name="q" placeholder="Search a property name" type="search" /><button className="wm-button" type="submit">Explore stays <span aria-hidden="true">↗</span></button></form>
             <Link className="wm-link mt-2 w-fit text-sm" href="/news">Read the latest stories</Link>
           </div>
         </div>
