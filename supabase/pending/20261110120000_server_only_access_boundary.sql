@@ -57,7 +57,7 @@ $$;
 revoke all on schema public from public, anon, authenticated;
 grant usage on schema public to service_role;
 
-revoke all on all types in schema public from public, anon, authenticated;
+revoke usage on all types in schema public from public, anon, authenticated;
 grant usage on all types in schema public to service_role;
 
 revoke all on all sequences in schema public from public, anon, authenticated;
