@@ -1,6 +1,6 @@
 # Phase 3 — Hotel and destination discovery implementation plan
 
-**Status:** PR #15 contains the Phase 3A staged schema; PR #16 adds the server-only public directory read model. Both are stacked before any public screens; SQL remains staged and no hosted data changed  
+**Status:** Phase 3A is implemented and merged in PRs #17 (schema) and #18 (public read model). Phase 3B design approval is the next gate; no public screens are implemented and no hosted data has changed  
 **Product plan:** `docs/IMPLEMENTATION_PLAN.md`, Phase 3  
 **Gap baseline:** `docs/IMPLEMENTATION_GAP_REVIEW.md`, Gate 2
 
@@ -9,6 +9,26 @@
 Turn the existing editorial site into a useful Maldives discovery platform: visitors can browse verified accommodation, understand where it is located, and move from a property to its island and atoll. Staff can curate records without publishing unverified claims.
 
 This phase is not a booking engine. Do not model live room inventory, nightly rates, availability, payments, reservation holds, traveller accounts or owner self-service.
+
+## Phase 3A completion evidence
+
+- PR #14 merged the server-only Supabase access boundary.
+- PR #17 merged the normalized atoll/island/property/facility/media metadata schema and lifecycle/verification history.
+- PR #18 merged server-only public read helpers and validated URL filter normalization.
+- Combined validation passed: lint, typecheck, unit tests, production build, clean local Supabase reset, staged SQL application and 71 pgTAP assertions.
+- The SQL is still staged under `supabase/pending/`. Do not apply it to hosted Supabase without a separately reviewed target, backup/rollback plan and explicit owner approval.
+
+## Phase 3B — Design gate before public screens
+
+The design direction must be reviewed before building the directory and destination routes. Preserve the existing Red Hat Display / Red Hat Text typography and the WheresMaldives ocean/lagoon brand vocabulary. The design work should compare two information architectures: (A) an atoll-first, photo-led directory with compact filters; (B) a geography-first field guide with a visible atoll/island filter index. The choice affects the primary navigation, hero, filter hierarchy and the balance between editorial storytelling and property discovery.
+
+Acceptance for this gate:
+- Editable desktop and mobile screen specimens, not flattened screenshots.
+- Realistic fixture content with clear image attribution placeholders; do not invent property facts.
+- Directory, property profile and destination page structure.
+- Tokenized type, color, spacing, radius, elevation and motion foundations with contrast evidence.
+- Desktop and phone captures, loading/empty/error states, keyboard focus and reduced-motion notes.
+- Owner selects or combines a direction before implementation PRs begin.
 
 ## Jobs and first public surfaces
 

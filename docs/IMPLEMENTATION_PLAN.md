@@ -11,6 +11,14 @@ Version 1.0 | Reviewable PR delivery | Repository: https://github.com/ahmedaisar
 - A phase is complete only when its exit criteria have evidence.
 - Do not invent Supabase, hosting, DNS or email credentials; use placeholders until configured.
 
+## Current delivery checkpoint — 11 November 2026
+
+- Merged: PR #14 server-only Supabase boundary, PR #17 normalized Maldives geography/property schema, and PR #18 public property read model.
+- Verified: combined application validation and local Supabase release validation passed, including 71 pgTAP assertions.
+- Not yet shipped: public hotel directory/profile pages, atoll/island destination pages, property administration, approved media workflow, enquiry flow, newsletter lifecycle, analytics and monetization.
+- Next gate: Phase 3B design review. Do not implement public discovery screens until the owner has reviewed the editable desktop/mobile specimens and selected the direction.
+- Hosted Supabase remains unchanged; staged migrations require a separate production migration review and explicit approval.
+
 ## PE workflow
 1. `product:start-here` to locate the next lifecycle action.
 2. `product:propose`, `market-segments`, `competitor-analysis` and related skills when refining product choices.

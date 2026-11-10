@@ -1,9 +1,9 @@
 # WheresMaldives.com — Product Implementation Gap Review
 
-**Reviewed:** 10 November 2026  
+**Reviewed:** 11 November 2026  
 **Repository:** https://github.com/ahmedaisar/wmv26  
-**Main baseline:** `43bd56caf25bf413a37f3ada127d132265bbf032`  
-**Open implementation PRs:** [#8 — Editorial admin workspace](https://github.com/ahmedaisar/wmv26/pull/8) and [#14 — Server-only Supabase boundary](https://github.com/ahmedaisar/wmv26/pull/14).
+**Main baseline:** `73e4cf2c9c152856d86a372780e8445be17a8234`  
+**Open implementation PRs:** Phase 3A PRs #17 and #18 are merged; no active Phase 3B implementation PR is open.
 
 This review compares `docs/PRD.md` and `docs/IMPLEMENTATION_PLAN.md` with the actual route tree, migrations, open PRs and connected Supabase state. It is a code/document inventory, not a claim that every page has been browser-tested.
 
@@ -13,6 +13,8 @@ The current product is an **editorial foundation**, not yet the full Maldives me
 
 On `main` today:
 - Public homepage, news listing, article detail and category/tag/author discovery pages.
+- Server-only Supabase access boundary merged in PR #14.
+- Maldives geography/property schema merged in PR #17; public property directory read model merged in PR #18.
 - Supabase identity/profile and editorial data foundations.
 - Staff sign-in, role lookup and a minimal protected admin dashboard.
 - SEO metadata, robots and sitemap.
@@ -26,8 +28,8 @@ Open PR #8 proposes:
 Open PR #14 moves application reads and auth behind a server-only Supabase client. Its deny-all database migration is staged outside the automatic migrations folder and is tested only on local CI until separately approved.
 
 Still absent:
-- Hotel/property directory and property detail pages.
-- Atoll, island and destination pages.
+- Hotel/property directory and property detail pages (Phase 3B design gate in progress; no routes shipped yet).
+- Atoll, island and destination pages (Phase 3B design gate in progress; no routes shipped yet).
 - Experiences and guides pages.
 - Search across editorial and property content.
 - Newsletter signup, consent, verification and unsubscribe.
@@ -97,6 +99,14 @@ Still absent:
 | `/admin/destinations` | No route/schema | Missing |
 | `/admin/enquiries` | No route/schema | Missing |
 | `/admin/users` | No route or safe role-management workflow | Missing |
+
+## Current Phase 3 implementation state
+
+- PR #14 merged: server-only Supabase boundary. The deny-all migration remains staged under `supabase/pending/`; hosted Supabase has not been changed by this work.
+- PR #17 merged: normalized atoll, island, property, facility, media metadata and append-only verification/status schema.
+- PR #18 merged: public property read model and bounded URL filter normalization.
+- Combined application and local Supabase validation passed, including 71 pgTAP assertions. No public property screens or geography seed records have been added yet.
+- Phase 3B design work is underway. Owner-facing direction specimens are being prepared before screen implementation; their current visual QA is incomplete and must not be treated as approved.
 
 ## Corrections to the original phase status
 
