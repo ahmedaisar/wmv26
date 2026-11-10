@@ -20,6 +20,7 @@ export type NormalizedPropertyDirectoryFilters = {
   propertyType: PropertyType | null;
   facilitySlug: string | null;
   slug: string | null;
+  valid: boolean;
 };
 
 const PROPERTY_TYPES: readonly PropertyType[] = ["resort", "hotel", "guesthouse"];
@@ -43,9 +44,17 @@ function escapeLikePattern(value: string) {
 export function normalizePropertyDirectoryFilters(
   input: PropertyDirectoryInput = {},
 ): NormalizedPropertyDirectoryFilters {
-  const propertyType = PROPERTY_TYPES.includes(input.propertyType as PropertyType)
-    ? (input.propertyType as PropertyType)
+  const requestedType = input.propertyType?.trim().toLowerCase();
+  const propertyType = PROPERTY_TYPES.includes(requestedType as PropertyType)
+    ? (requestedType as PropertyType)
     : null;
+  const hasValue = (value: string | undefined) => Boolean(value?.trim());
+  const valid =
+    (!hasValue(input.atollSlug) || normalizeSlug(input.atollSlug) !== null) &&
+    (!hasValue(input.islandSlug) || normalizeSlug(input.islandSlug) !== null) &&
+    (!hasValue(input.facilitySlug) || normalizeSlug(input.facilitySlug) !== null) &&
+    (!hasValue(input.slug) || normalizeSlug(input.slug) !== null) &&
+    (!hasValue(input.propertyType) || propertyType !== null);
 
   return {
     page: normalizePage(input.page, 1, 1000),
@@ -56,5 +65,6 @@ export function normalizePropertyDirectoryFilters(
     propertyType,
     facilitySlug: normalizeSlug(input.facilitySlug),
     slug: normalizeSlug(input.slug),
+    valid,
   };
 }
