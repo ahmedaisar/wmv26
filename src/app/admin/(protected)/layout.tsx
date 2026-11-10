@@ -12,7 +12,7 @@ export default async function ProtectedAdminLayout({
   const canManageArticles = profile.role !== "commercial";
 
   return (
-    <div className="admin-shell">
+    <div className="taste-app admin-shell">
       <header className="nav">
         <div className="wrap nav__bar">
           <Link className="nav__logo" href="/admin">
