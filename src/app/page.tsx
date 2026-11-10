@@ -22,7 +22,7 @@ export default async function HomePage() {
       <section className="mx-auto grid min-h-[620px] max-w-[1440px] grid-cols-1 gap-12 px-6 pb-20 pt-16 md:grid-cols-[0.92fr_1.08fr] md:items-center md:px-12 md:pt-20">
         <div className="flex flex-col justify-center">
           <p className="mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-lagoon">The Maldives. Beyond the Ordinary.</p>
-          <h1 className="max-w-[660px] font-serif text-[clamp(3.4rem,7vw,6.8rem)] font-medium leading-[0.91] tracking-[-0.065em] text-ocean">A closer look at the islands.</h1>
+          <h1 className="max-w-[660px] text-[clamp(3.4rem,7vw,6.8rem)] font-medium leading-[0.91] tracking-[-0.065em] text-ocean">A closer look at the islands.</h1>
           <p className="mt-8 max-w-[470px] text-base leading-8 text-muted md:text-lg">Independent travel stories, hospitality news and thoughtful discovery from across the Maldives.</p>
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
             <Link className="border-b border-ocean pb-2 font-medium text-ocean transition-colors hover:border-lagoon hover:text-lagoon" href="/news">Explore the latest stories <span aria-hidden="true">↗</span></Link>
