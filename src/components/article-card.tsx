@@ -36,11 +36,11 @@ export function ArticleCard({ article, featured = false }: { article: PublishedA
           {article.title}
         </h2>
         {article.excerpt ? <p className="mt-3 max-w-2xl text-sm leading-7 text-muted">{article.excerpt}</p> : null}
-        <div className="mt-5 flex items-center gap-3 text-[11px] text-muted">
-          <span>{article.author?.display_name ?? "WheresMaldives Editorial"}</span>
-          {article.reading_time_minutes ? <><span aria-hidden="true">·</span><span>{article.reading_time_minutes} min read</span></> : null}
-        </div>
       </Link>
+      <div className="mt-5 flex items-center gap-3 text-[11px] text-muted">
+        {article.author ? <Link className="hover:text-lagoon" href={`/authors/${article.author.slug}`}>{article.author.display_name}</Link> : <span>WheresMaldives Editorial</span>}
+        {article.reading_time_minutes ? <><span aria-hidden="true">·</span><span>{article.reading_time_minutes} min read</span></> : null}
+      </div>
     </article>
   );
 }
