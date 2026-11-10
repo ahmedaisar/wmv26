@@ -1,0 +1,71 @@
+:root {
+  color-scheme: light;
+  --color-ocean: #102f43;
+  --color-lagoon: #17666d;
+  --color-lagoon-wash: #e6f0ed;
+  --color-sand: #e9e2d4;
+  --color-paper: #faf9f6;
+  --color-white: #ffffff;
+  --color-ink: #17232b;
+  --color-muted: #586970;
+  --color-border: #dddcd3;
+  --color-surface-soft: #f1f2ed;
+  --color-focus: #145c78;
+  --color-error: #9b352d;
+
+  --font-display: "Red Hat Display", "Red Hat Text", Arial, sans-serif;
+  --font-body: "Red Hat Text", Arial, Helvetica, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.25rem;
+  --font-size-display: clamp(3rem, 7vw, 5.75rem);
+  --line-tight: 0.98;
+  --line-heading: 1.12;
+  --line-body: 1.7;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-page: clamp(1.25rem, 4vw, 3.5rem);
+  --content-width: 90rem;
+  --reading-width: 48rem;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-pill: 999px;
+  --shadow-card: 0 0.75rem 2.5rem rgb(16 47 67 / 0.08);
+  --shadow-float: 0 1.25rem 3.5rem rgb(16 47 67 / 0.14);
+
+  --duration-fast: 140ms;
+  --duration-normal: 220ms;
+  --duration-slow: 360ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 20;
+  --z-overlay: 40;
+  --z-dialog: 60;
+
+  --control-height-sm: 2.5rem;
+  --control-height-md: 3rem;
+  --control-height-lg: 3.5rem;
+}
