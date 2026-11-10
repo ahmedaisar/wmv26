@@ -78,4 +78,8 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Run pinned Taste Skill deal
+        env:
+          TASTE_PALETTE: cool-white-slate
+          TASTE_TYPE: reddit
+          TASTE_MOMENT: '1'
         run: bash scripts/taste-deal.sh software saas
