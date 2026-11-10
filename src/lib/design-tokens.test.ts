@@ -5,6 +5,11 @@ import { describe, expect, it } from "vitest";
 const tokens = readFileSync(join(process.cwd(), "design/tokens.css"), "utf8");
 const kit = readFileSync(join(process.cwd(), "design/kit.css"), "utf8");
 const globals = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
+const screens = [
+  "src/app/page.tsx", "src/app/hotels/page.tsx", "src/app/hotels/[slug]/page.tsx",
+  "src/app/destinations/page.tsx", "src/app/atolls/[slug]/page.tsx",
+  "src/app/islands/[slug]/page.tsx", "src/components/property-card.tsx",
+].map((path) => readFileSync(join(process.cwd(), path), "utf8")).join("\\n");
 
 function token(name: string) {
   const value = tokens.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})\\s*;`))?.[1];
@@ -39,7 +44,7 @@ describe("Atoll Atlas design kit", () => {
 
   it("keeps raw hex colours in tokens, not in primitives or the global stylesheet", () => {
     expect(kit).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
-    expect(globals).not.toMatch(/#[0-9a-fA-F]{3,8}\\b/);
+    expect(globals).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
   });
 
   it("meets WCAG AA for the main text and action combinations", () => {
