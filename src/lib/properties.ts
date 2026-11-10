@@ -207,18 +207,20 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
   }
 
   const propertyIds = data.map((property) => property.id);
-  const { data: associations } = await supabase
+  const { data: associations, error: associationsError } = await supabase
     .from("property_facilities")
     .select("property_id,facility_id")
     .eq("is_verified", true)
     .in("property_id", propertyIds)
     .order("facility_id", { ascending: true });
 
+  if (associationsError) throw new Error("Unable to load verified property facilities");
+
   const facilityIds = [...new Set((associations ?? []).map((item) => item.facility_id))];
   const [facilitiesResult, mediaResult] = await Promise.all([
     facilityIds.length
       ? supabase.from("facilities").select("id,name,slug,description").eq("is_active", true).in("id", facilityIds)
-      : Promise.resolve({ data: [], error: null }),
+      : Promise.resolve({ data: [] as PublicFacility[], error: null }),
     supabase
       .from("property_media")
       .select("id,property_id,media_url,alt_text,credit,sort_order,focal_x,focal_y")
@@ -280,7 +282,7 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
 }
 
 export async function getPublicPropertyBySlug(slug: string): Promise<PublicProperty | null> {
-  const normalizedSlug = normalizeSlug(slug);
+  const normalizedSlug = normalizePropertyDirectoryFilters({ slug }).slug;
   if (!normalizedSlug) return null;
   const result = await getPublicProperties({ slug: normalizedSlug, pageSize: 1 });
   return result.properties[0] ?? null;
