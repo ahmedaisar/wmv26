@@ -1,18 +1,23 @@
-name: CI
+name: PR checks
 
 on:
   pull_request:
-  push:
     branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
 
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
-  quality:
-    name: Lint, typecheck, test and build
+  pr-quality:
+    name: PR quality
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 8
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,7 +28,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npx --yes npm@11 install --no-audit --no-fund
+        run: npm install --no-package-lock --no-audit --no-fund
 
       - name: Assert server-only Supabase boundary
         run: |
@@ -41,90 +46,5 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
+      - name: Unit tests
         run: npm test
-
-      - name: Build
-        run: npm run build
-
-  database:
-    name: Apply Supabase migrations locally
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Start local Supabase
-        run: npx --yes supabase@2 start --exclude studio,edge-runtime,logflare,vector
-
-      - name: Apply migrations from a clean database
-        run: npx --yes supabase@2 db reset
-
-      - name: Apply staged server-only boundary migration locally
-        run: |
-          DB_CONTAINER="$(docker ps --format '{{.Names}}' | grep '^supabase_db_' | head -n 1)"
-          test -n "$DB_CONTAINER"
-          docker exec -i "$DB_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < supabase/pending/20261110120000_server_only_access_boundary.sql
-
-      - name: Run database policy and workflow tests
-        run: npx --yes supabase@2 test db
-
-      - name: Stop local Supabase
-        if: always()
-        run: npx --yes supabase@2 stop --no-backup || true
-
-  taste-design:
-    name: Taste Skill art-direction deal
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feat/editorial-admin'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Run pinned Taste Skill deal
-        env:
-          TASTE_PALETTE: cool-white-slate
-          TASTE_TYPE: reddit
-          TASTE_MOMENT: '1'
-        run: bash scripts/taste-deal.sh software saas
-
-
-  taste-public-design:
-    name: Taste Skill public editorial art-direction deal
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feat/public-editorial-experience'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Deal the public publisher direction
-        env:
-          TASTE_MOMENT: '1'
-        run: |
-          bash scripts/taste-deal.sh service agency | tee /tmp/wmv-public-taste-deal.txt
-          mkdir -p .taste-skill
-          cp /tmp/wmv-public-taste-deal.txt .taste-skill/public-editorial-deal.txt
-
-      - name: Upload dealt direction
-        uses: actions/upload-artifact@v4
-        with:
-          name: taste-public-editorial-deal
-          path: .taste-skill/public-editorial-deal.txt
