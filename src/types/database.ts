@@ -92,9 +92,8 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
-      current_app_role: { Args: Record<PropertyKey, never>; Returns: AppRole };
       transition_article: {
-        Args: { p_article_id: string; p_to_status: ArticleStatus; p_scheduled_at?: string | null; p_note?: string | null };
+        Args: { p_actor_id: string; p_article_id: string; p_to_status: ArticleStatus; p_scheduled_at?: string | null; p_note?: string | null };
         Returns: ArticleStatus;
       };
     };
