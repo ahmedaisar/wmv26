@@ -34,7 +34,7 @@ export default async function IslandPage({ params }: Props) {
   const context = await getIslandContext(slug);
   if (!context) notFound();
   const { island, atoll } = context;
-  const result = await getPublicProperties({ atollSlug: atoll.slug, islandSlug: island.slug, pageSize: 48 });
+  const result = await getPublicProperties({ atollSlug: atoll.slug, islandSlug: island.slug, pageSize: 6 });
 
   return (
     <main>
@@ -49,7 +49,7 @@ export default async function IslandPage({ params }: Props) {
       </section>
       <section className="wm-shell py-12 md:py-16">
         <div className="wm-filter-heading mb-7"><div><p className="wm-eyebrow">Places to stay</p><h2 className="wm-title mt-3 text-3xl">Verified properties</h2></div><span className="text-sm text-muted">{result.total} listed</span></div>
-        {result.properties.length ? <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{result.properties.map((property) => <PropertyCard key={property.id} property={property} />)}</div> : <div className="wm-empty"><p className="wm-copy">No verified properties are published for this island yet.</p><Link className="wm-button mt-5" href="/hotels">Browse all stays</Link></div>}
+        {result.properties.length ? <><div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{result.properties.map((property) => <PropertyCard key={property.id} property={property} />)}</div>{result.total > result.properties.length ? <div className="mt-8"><Link className="wm-button" href={`/hotels?atoll=${atoll.slug}&island=${island.slug}`}>View all {result.total} stays on {island.name}</Link></div> : null}</> : <div className="wm-empty"><p className="wm-copy">No verified properties are published for this island yet.</p><Link className="wm-button mt-5" href="/hotels">Browse all stays</Link></div>}
       </section>
       <SiteFooter />
     </main>
