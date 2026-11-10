@@ -1,4 +1,4 @@
-import type { PropertyDirectoryInput } from "@/lib/property-filters";
+import type { PropertyDirectoryInput } from "./property-filters";
 
 export function safeExternalUrl(value: string | null | undefined): string | null {
   if (!value?.trim()) return null;
