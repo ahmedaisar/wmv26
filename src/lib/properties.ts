@@ -90,8 +90,10 @@ export async function getPublicIslands(atollSlug?: string): Promise<PublicIsland
   const { data: atolls, error: atollsError } = await atollsQuery;
   if (atollsError || !atolls?.length) return [];
 
-  const activeAtolls = atollSlug
-    ? atolls.filter((atoll) => atoll.slug === normalizeSlug(atollSlug))
+  const normalizedAtollSlug = normalizePropertyDirectoryFilters({ atollSlug }).atollSlug;
+  if (atollSlug?.trim() && !normalizedAtollSlug) return [];
+  const activeAtolls = normalizedAtollSlug
+    ? atolls.filter((atoll) => atoll.slug === normalizedAtollSlug)
     : atolls;
   const atollIds = activeAtolls.map((atoll) => atoll.id);
   if (!atollIds.length) return [];
@@ -122,7 +124,9 @@ export async function getPublicFacilities(): Promise<PublicFacility[]> {
 
 export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
   const filters = normalizePropertyDirectoryFilters(input);
-  if (!isSupabaseServerConfigured()) return emptyResult(filters.page, filters.pageSize);
+  if (!filters.valid || !isSupabaseServerConfigured()) {
+    return emptyResult(filters.page, filters.pageSize);
+  }
 
   const supabase = createSupabaseServerClient();
   const [atollsResult, islandsResult] = await Promise.all([
