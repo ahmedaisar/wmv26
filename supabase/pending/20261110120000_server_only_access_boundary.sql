@@ -6,14 +6,33 @@ begin;
 
 alter default privileges for role postgres
   revoke all on tables from public, anon, authenticated;
+alter default privileges for role postgres in schema public
+  revoke all on tables from public, anon, authenticated;
+alter default privileges for role postgres
+  grant select, insert, update, delete on tables to service_role;
+
 alter default privileges for role postgres
   revoke all on sequences from public, anon, authenticated;
+alter default privileges for role postgres in schema public
+  revoke all on sequences from public, anon, authenticated;
+alter default privileges for role postgres in schema public
+  grant usage, select, update on sequences to service_role;
+
 alter default privileges for role postgres
+  revoke usage on types from public, anon, authenticated;
+alter default privileges for role postgres in schema public
   revoke usage on types from public, anon, authenticated;
 alter default privileges for role postgres
   grant usage on types to service_role;
+alter default privileges for role postgres in schema public
+  grant usage on types to service_role;
+
 alter default privileges for role postgres
   revoke execute on functions from public, anon, authenticated;
+alter default privileges for role postgres in schema public
+  revoke execute on functions from public, anon, authenticated;
+alter default privileges for role postgres in schema public
+  grant execute on functions to service_role;
 
 do $$
 declare
