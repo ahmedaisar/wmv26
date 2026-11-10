@@ -132,6 +132,8 @@ jobs:
           TASTE_PALETTE: white-link-blue
           TASTE_TYPE: geist
           TASTE_AXIS: wght
+          TASTE_MOMENT: '1'
+          TASTE_MOMENT_SEED: wmv26-editorial-7
         run: bash scripts/taste-deal.sh software saas
 
   taste-editorial-ui-browser-gate:
@@ -154,6 +156,8 @@ jobs:
           TASTE_PALETTE: white-link-blue
           TASTE_TYPE: geist
           TASTE_AXIS: wght
+          TASTE_MOMENT: '1'
+          TASTE_MOMENT_SEED: wmv26-editorial-7
         run: bash scripts/taste-deal.sh software saas
 
       - name: Install dependencies
@@ -195,10 +199,13 @@ jobs:
           }
           echo "CHROME_PATH=$CHROME_WRAPPER" >> "$GITHUB_ENV"
 
+      - name: Build production app for the browser gate
+        run: npm run build
+
       - name: Start the Next.js application
         shell: bash
         run: |
-          npm run dev > /tmp/wheresmaldives-next.log 2>&1 &
+          npm run start > /tmp/wheresmaldives-next.log 2>&1 &
           echo "$!" > /tmp/wheresmaldives-next.pid
           for attempt in {1..60}; do
             if curl --fail --silent http://localhost:3000/admin/sign-in >/dev/null; then

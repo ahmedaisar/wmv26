@@ -31,9 +31,9 @@ if [[ -n "${TASTE_PALETTE:-}" && -n "${TASTE_TYPE:-}" ]]; then
 fi
 
 if [[ "${TASTE_MOMENT:-}" == "1" ]]; then
-  node "$SKILL_DIR/skills/taste-skill/scripts/moments.mjs" pick \
-    --page "$PAGE" \
-    --count 1 \
-    --fits section \
-    --history .taste-skill/history.json
+  moment_args=(pick --page "$PAGE" --count 1 --fits section --history .taste-skill/history.json)
+  if [[ -n "${TASTE_MOMENT_SEED:-}" ]]; then
+    moment_args+=(--seed "$TASTE_MOMENT_SEED")
+  fi
+  node "$SKILL_DIR/skills/taste-skill/scripts/moments.mjs" "${moment_args[@]}"
 fi

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
 import { getCurrentProfile } from "@/lib/auth";
 import { signIn } from "./actions";
 
@@ -9,6 +10,20 @@ type SignInPageProps = {
   searchParams: Promise<{ error?: string; next?: string }>;
 };
 
+const coverageTopics = [
+  "News",
+  "Travel",
+  "Hospitality",
+  "Resorts",
+  "Guesthouses",
+  "Culture",
+  "Atolls",
+  "Conservation",
+  "Airlines",
+  "Dining",
+  "Marine life",
+];
+
 export default async function AdminSignInPage({ searchParams }: SignInPageProps) {
   const profile = await getCurrentProfile();
   if (profile) redirect("/admin");
@@ -16,92 +31,91 @@ export default async function AdminSignInPage({ searchParams }: SignInPageProps)
 
   return (
     <>
-      <header className="nav admin-sign-in-nav">
+      <header className="nav">
         <div className="wrap nav__bar">
-          <Link aria-label="WheresMaldives home" className="nav__logo" href="/">
-            <span className="mark mark--initial" aria-hidden="true">W</span>
-            <span>WHERESMALDIVES</span>
+          <a className="skip-link" href="#top">Skip to content</a>
+          <Link className="nav__logo" href="/">
+            <span className="mark" data-mark="dots" aria-hidden="true" />
+            WHERESMALDIVES
           </Link>
-          <span className="admin-sign-in-nav__label">STAFF WORKSPACE</span>
+          <div className="nav__actions">
+            <Link className="btn btn--secondary" href="/">View public site</Link>
+          </div>
         </div>
       </header>
 
-      <main>
-        <section className="section admin-sign-in-section">
-          <div className="wrap admin-sign-in__wrap">
-            <div className="admin-sign-in__grid">
-              <div className="admin-sign-in__content">
-                <p className="admin-kicker">Independent Maldives media</p>
-                <h1 className="admin-sign-in__title">Maldives editorial workspace</h1>
-                <p className="admin-sign-in__intro">
-                  Private access for the team reporting on Maldives travel, hotels and hospitality.
+      <main id="top">
+        <section className="hero hero--split admin-signin-hero" data-enter>
+          <div className="wrap">
+            <div className="hero-text hero__grid grid">
+              <div className="hero__text admin-signin__copy">
+                <p className="hero__kicker">WheresMaldives staff workspace</p>
+                <h1>Editorial CMS for Maldives newsrooms</h1>
+                <p className="hero__lead">
+                  A private publishing workspace for the WheresMaldives newsroom, covering travel and hospitality across the Maldives.
                 </p>
 
                 {params.error === "invalid" ? (
-                  <p className="admin-sign-in__error" role="alert">
+                  <p className="admin-signin__error" role="alert">
                     We could not sign you in. Check your email and password, then try again.
                   </p>
                 ) : null}
 
-                <form action={signIn} className="admin-sign-in__form">
+                <form action={signIn} className="form admin-signin__form">
                   <input name="next" type="hidden" value={params.next ?? "/admin"} />
-                  <div className="admin-sign-in__field">
-                    <label htmlFor="email">Work email</label>
+                  <label className="field" htmlFor="email">
+                    Work email
                     <input autoComplete="username" id="email" name="email" required type="email" />
-                  </div>
-                  <div className="admin-sign-in__field">
-                    <label htmlFor="password">Password</label>
+                  </label>
+                  <label className="field" htmlFor="password">
+                    Password
                     <input autoComplete="current-password" id="password" name="password" required type="password" />
+                  </label>
+                  <div className="btn-row">
+                    <button className="btn btn--primary" type="submit">Sign in</button>
                   </div>
-                  <button className="btn btn--primary admin-sign-in__submit" type="submit">
-                    Sign in to workspace <span aria-hidden="true">↗</span>
-                  </button>
                 </form>
-                <p className="admin-sign-in__privacy">
-                  Invitation-only access. Contact your workspace administrator if you need an account.
+
+                <p className="admin-signin__helper">
+                  Access is limited to staff accounts invited by a workspace administrator.
                 </p>
               </div>
 
-              <aside aria-label="WheresMaldives editorial desk" className="admin-sign-in__visual">
-                <div className="admin-sign-in__visual-top">
-                  <span>FIELD NOTES</span>
-                  <span>MALDIVES · INDIAN OCEAN</span>
+              <aside className="hero__media admin-signin__visual" aria-label="Editorial publishing workflow">
+                <div className="admin-signin__panel">
+                  <p className="admin-kicker">Editorial workflow</p>
+                  <ol className="admin-signin__steps">
+                    <li>
+                      <span className="admin-signin__step-number">01</span>
+                      <span><strong>Draft</strong><small>Prepare the story and byline</small></span>
+                    </li>
+                    <li>
+                      <span className="admin-signin__step-number">02</span>
+                      <span><strong>Review</strong><small>Check the facts and category</small></span>
+                    </li>
+                    <li>
+                      <span className="admin-signin__step-number">03</span>
+                      <span><strong>Publish</strong><small>Release approved coverage</small></span>
+                    </li>
+                  </ol>
+                  <p className="admin-signin__panel-foot">Draft → Review → Published</p>
                 </div>
-                <div aria-label="Abstract atoll map illustration" className="admin-sign-in__atoll" role="img">
-                  <span className="admin-sign-in__atoll-ring admin-sign-in__atoll-ring--one" />
-                  <span className="admin-sign-in__atoll-ring admin-sign-in__atoll-ring--two" />
-                  <span className="admin-sign-in__atoll-ring admin-sign-in__atoll-ring--three" />
-                  <span className="admin-sign-in__atoll-island" />
-                </div>
-                <div className="admin-sign-in__visual-caption">
-                  <p className="admin-kicker">A view from the islands</p>
-                  <h2>Reporting with the Maldives in focus.</h2>
-                </div>
-                <ul className="admin-sign-in__beats" aria-label="Editorial coverage">
-                  <li><span>01</span> News & reporting</li>
-                  <li><span>02</span> Hotels & hospitality</li>
-                  <li><span>03</span> Island life & travel</li>
-                </ul>
               </aside>
-            </div>
-
-            <div className="admin-sign-in__moment" data-moment="marquee-row" data-moment-opts='{"speed": 36}'>
-              <ul className="mo-mq__track">
-                <li>Report</li>
-                <li>Verify</li>
-                <li>Discover</li>
-                <li>Publish</li>
-                <li>Share the islands</li>
-              </ul>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="closing admin-sign-in-footer">
+      <footer className="closing admin-signin__closing">
         <div className="wrap">
-          <span>© {new Date().getFullYear()} WheresMaldives.com</span>
-          <span>Independent Maldives travel and hospitality media.</span>
+          <p className="admin-kicker">WheresMaldives editorial coverage</p>
+          <h2>Stories from across the Maldives</h2>
+          <div className="admin-marquee" data-moment="marquee-row" data-moment-opts='{"speed":36}'>
+            <ul className="mo-mq__track" aria-label="Editorial coverage topics">
+              {coverageTopics.map((topic) => <li key={topic}>{topic}</li>)}
+            </ul>
+          </div>
+          <p className="admin-signin__closing-note">WheresMaldives.com · Staff workspace</p>
         </div>
       </footer>
     </>

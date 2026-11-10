@@ -22,11 +22,9 @@ export default function AdminLayout({
   return (
     <>
       {children}
-      <Script
-        src="/taste-skill/assets/moments/moments.js"
-        strategy="afterInteractive"
-        type="module"
-      />
+      <Script src="/taste-skill/assets/system.js" strategy="afterInteractive" type="module" />
+      <Script src="/taste-skill/assets/layout/layout.js" strategy="afterInteractive" type="module" />
+      <Script src="/taste-skill/assets/motion/motion.js" strategy="afterInteractive" type="module" />
     </>
   );
 }
