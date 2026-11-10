@@ -1,19 +1,10 @@
 import Link from "next/link";
 import type { PublicProperty } from "@/lib/properties";
-
-function safeImageUrl(value: string | null | undefined): string | null {
-  if (!value) return null;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
-  } catch {
-    return null;
-  }
-}
+import { safeExternalUrl } from "@/lib/public-links";
 
 export function PropertyCard({ property }: { property: PublicProperty }) {
   const image = property.media[0];
-  const imageUrl = safeImageUrl(image?.media_url);
+  const imageUrl = safeExternalUrl(image?.media_url);
 
   return (
     <article className="wm-property-card">
