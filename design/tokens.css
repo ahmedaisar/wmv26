@@ -51,6 +51,8 @@
   --space-24: 6rem;
   --space-page: clamp(1.25rem, 4vw, 3.5rem);
   --content-width: 90rem;
+  --home-illustration-min-height: 24rem;
+  --home-illustration-desktop-min-height: 34rem;
   --reading-width: 48rem;
 
   --radius-sm: 0.375rem;
