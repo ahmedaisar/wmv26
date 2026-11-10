@@ -99,11 +99,11 @@ begin
     raise exception 'Article not found or not accessible' using errcode = 'P0002';
   end if;
 
-  if v_article.status = p_to_status then
-    return p_to_status;
-  end if;
-
   if v_role in ('admin', 'editor') then
+    if v_article.status = p_to_status then
+      return p_to_status;
+    end if;
+
     if not (
       (v_article.status = 'in_review' and p_to_status in ('draft', 'approved'))
       or (v_article.status = 'approved' and p_to_status in ('scheduled', 'published'))
@@ -116,9 +116,11 @@ begin
     v_role in ('journalist', 'contributor')
     and v_article.created_by = p_actor_id
     and v_article.status = 'draft'
-    and p_to_status = 'in_review'
+    and p_to_status in ('draft', 'in_review')
   then
-    null;
+    if p_to_status = 'draft' then
+      return p_to_status;
+    end if;
   else
     raise exception 'Not authorized to perform this editorial transition' using errcode = '42501';
   end if;
