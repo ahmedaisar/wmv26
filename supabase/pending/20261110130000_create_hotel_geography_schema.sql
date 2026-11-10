@@ -181,7 +181,7 @@ create table public.property_media (
 
 create table public.property_verification_events (
   id uuid primary key default gen_random_uuid(),
-  property_id uuid not null references public.properties(id) on delete cascade,
+  property_id uuid not null references public.properties(id) on delete restrict,
   source_name text not null check (length(trim(source_name)) > 0),
   source_url text not null check (source_url ~* '^https?://'),
   actor_id uuid not null references public.profiles(id) on delete restrict,
@@ -191,7 +191,7 @@ create table public.property_verification_events (
 
 create table public.property_status_events (
   id uuid primary key default gen_random_uuid(),
-  property_id uuid not null references public.properties(id) on delete cascade,
+  property_id uuid not null references public.properties(id) on delete restrict,
   from_status public.property_status,
   to_status public.property_status not null,
   actor_id uuid not null references public.profiles(id) on delete restrict,
@@ -264,6 +264,12 @@ grant select, insert, update, delete on table
   public.property_verification_events,
   public.property_status_events
 to service_role;
+
+-- Verification and lifecycle events are append-only, even for the server role.
+revoke update, delete on table
+  public.property_verification_events,
+  public.property_status_events
+from service_role;
 
 create function public.transition_property(
   p_actor_id uuid,
