@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedArticleBySlug } from "@/lib/editorial";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Json } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +59,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const article = await getPublishedArticleBySlug(slug);
   if (!article) notFound();
+  const supabase = await createSupabaseServerClient();
+  const { data: tagLinks } = await supabase.from("article_tags").select("tag_id").eq("article_id", article.id);
+  const tagIds = [...new Set((tagLinks ?? []).map((item) => item.tag_id))];
+  const { data: tags } = tagIds.length
+    ? await supabase.from("tags").select("id,slug,name").in("id", tagIds).eq("is_active", true)
+    : { data: [] as { id: string; slug: string; name: string }[] };
 
   const date = article.published_at
     ? new Intl.DateTimeFormat("en", { day: "numeric", month: "long", year: "numeric" }).format(new Date(article.published_at))
@@ -70,13 +77,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <Link className="text-xs font-semibold text-lagoon underline decoration-sand underline-offset-4" href="/news">← Back to all stories</Link>
         <header className="mx-auto mt-12 max-w-[820px] text-center">
           <div className="flex flex-wrap justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-lagoon">
-            <span>{article.category?.name ?? article.article_type.replace("_", " ")}</span>
+            {article.category ? <Link href={`/category/${article.category.slug}`} className="hover:text-ocean">{article.category.name}</Link> : <span>{article.article_type.replace("_", " ")}</span>}
             {date ? <><span aria-hidden="true">/</span><time dateTime={article.published_at ?? undefined}>{date}</time></> : null}
             {article.reading_time_minutes ? <><span aria-hidden="true">/</span><span>{article.reading_time_minutes} min read</span></> : null}
           </div>
           <h1 className="mt-7 text-4xl font-medium leading-[1.08] tracking-[-0.045em] text-ocean md:text-6xl">{article.title}</h1>
           {article.excerpt ? <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-muted">{article.excerpt}</p> : null}
-          <p className="mt-7 text-xs text-muted">By <span className="font-semibold text-ocean">{article.author?.display_name ?? "WheresMaldives Editorial"}</span></p>
+          <p className="mt-7 text-xs text-muted">By {article.author ? <Link className="font-semibold text-ocean underline decoration-sand underline-offset-4 hover:text-lagoon" href={`/authors/${article.author.slug}`}>{article.author.display_name}</Link> : <span className="font-semibold text-ocean">WheresMaldives Editorial</span>}</p>
           {article.disclosure !== "none" ? <p className="mt-4 text-[10px] uppercase tracking-[0.16em] text-muted">{article.disclosure === "sponsored" ? "Sponsored content" : "Affiliate disclosure"}</p> : null}
         </header>
         {article.hero_image_url ? (
@@ -90,6 +97,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <div className="mx-auto mt-14 max-w-[680px]">
           {renderBody(article.body)}
         </div>
+        {tags?.length ? <nav aria-label="Story topics" className="mx-auto mt-12 flex max-w-[680px] flex-wrap gap-2 border-t border-sand pt-7">{tags.map((tag) => <Link className="border border-sand px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-muted transition-colors hover:border-lagoon hover:text-lagoon" href={`/tag/${tag.slug}`} key={tag.id}>{tag.name}</Link>)}</nav> : null}
         <div className="mx-auto mt-16 max-w-[680px] border-t border-sand pt-8">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-lagoon">Continue exploring</p>
           <Link className="mt-4 inline-block text-xl font-medium text-ocean underline decoration-sand underline-offset-4 hover:text-lagoon" href="/news">More from WheresMaldives</Link>
