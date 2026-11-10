@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(26);
+select plan(32);
 
 select ok(
   to_regclass('public.article_status_events') is not null,
@@ -25,6 +25,10 @@ select ok(
    and relrowsecurity),
   'RLS is enabled on every application table'
 );
+
+select ok(not has_schema_privilege('anon', 'public', 'USAGE'), 'anon cannot use the application schema');
+select ok(not has_schema_privilege('authenticated', 'public', 'USAGE'), 'authenticated cannot use the application schema');
+select ok(has_schema_privilege('service_role', 'public', 'USAGE'), 'server service role can use the application schema');
 
 select is(
   (select count(*)::integer
@@ -117,6 +121,24 @@ select ok(
   'new public tables do not grant select to authenticated by default'
 );
 
+create type public.__default_type_probe as enum ('probe');
+
+select ok(
+  not has_type_privilege('anon', 'public.__default_type_probe', 'USAGE'),
+  'new public types do not grant usage to anon by default'
+);
+
+select ok(
+  not has_type_privilege('authenticated', 'public.__default_type_probe', 'USAGE'),
+  'new public types do not grant usage to authenticated by default'
+);
+
+select ok(
+  has_type_privilege('service_role', 'public.__default_type_probe', 'USAGE'),
+  'new public types grant usage to the server role by default'
+);
+
+drop type public.__default_type_probe;
 drop table public.__default_table_probe;
 drop function public.__default_execute_probe();
 
