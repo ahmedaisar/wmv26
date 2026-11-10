@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { PropertyCard } from "@/components/property-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -35,7 +36,8 @@ export default async function HotelsPage({ searchParams }: { searchParams: Searc
   ]);
 
   const pageCount = Math.max(1, Math.ceil(result.total / result.pageSize));
-  const currentPage = Math.min(result.page, pageCount);
+  if (result.page > pageCount) redirect(buildPropertyDirectoryHref(filters, pageCount));
+  const currentPage = result.page;
 
   return (
     <main>
