@@ -2,7 +2,14 @@ import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseServerConfigured } from "@/lib/env";
-import type { Database, PropertyType } from "@/types/database";
+import type { Database } from "@/types/database";
+import {
+  normalizePropertyDirectoryFilters,
+  type PropertyDirectoryInput,
+} from "@/lib/property-filters";
+
+export { normalizePropertyDirectoryFilters } from "@/lib/property-filters";
+export type { PropertyDirectoryInput, NormalizedPropertyDirectoryFilters } from "@/lib/property-filters";
 
 type PropertyRow = Database["public"]["Tables"]["properties"]["Row"];
 type AtollRow = Database["public"]["Tables"]["atolls"]["Row"];
@@ -51,66 +58,8 @@ export type PublicProperty = PublicPropertyRow & {
   media: PublicPropertyMedia[];
 };
 
-export type PropertyDirectoryInput = {
-  page?: number | string;
-  pageSize?: number | string;
-  search?: string;
-  atollSlug?: string;
-  islandSlug?: string;
-  propertyType?: string;
-  facilitySlug?: string;
-  slug?: string;
-};
-
-export type NormalizedPropertyDirectoryFilters = {
-  page: number;
-  pageSize: number;
-  search: string;
-  atollSlug: string | null;
-  islandSlug: string | null;
-  propertyType: PropertyType | null;
-  facilitySlug: string | null;
-  slug: string | null;
-};
-
-const PROPERTY_TYPES: readonly PropertyType[] = ["resort", "hotel", "guesthouse"];
-const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const PROPERTY_FIELDS =
   "id,name,slug,property_type,summary,description,atoll_id,island_id,address,latitude,longitude,official_website_url,booking_url,public_email,public_phone,is_featured,published_at";
-
-function normalizePage(value: number | string | undefined, fallback: number, max: number) {
-  const parsed = typeof value === "number" ? value : Number.parseInt(value ?? "", 10);
-  if (!Number.isFinite(parsed)) return fallback;
-  return Math.min(max, Math.max(1, Math.floor(parsed)));
-}
-
-function normalizeSlug(value: string | undefined): string | null {
-  const slug = value?.trim().toLowerCase() ?? "";
-  return SLUG_PATTERN.test(slug) ? slug : null;
-}
-
-function escapeLikePattern(value: string) {
-  return value.replace(/[\\%_]/g, "\\$&");
-}
-
-export function normalizePropertyDirectoryFilters(
-  input: PropertyDirectoryInput = {},
-): NormalizedPropertyDirectoryFilters {
-  const propertyType = PROPERTY_TYPES.includes(input.propertyType as PropertyType)
-    ? (input.propertyType as PropertyType)
-    : null;
-
-  return {
-    page: normalizePage(input.page, 1, 1000),
-    pageSize: normalizePage(input.pageSize, 12, 48),
-    search: escapeLikePattern(input.search?.trim().slice(0, 80) ?? ""),
-    atollSlug: normalizeSlug(input.atollSlug ?? undefined),
-    islandSlug: normalizeSlug(input.islandSlug ?? undefined),
-    propertyType,
-    facilitySlug: normalizeSlug(input.facilitySlug ?? undefined),
-    slug: normalizeSlug(input.slug ?? undefined),
-  };
-}
 
 function emptyResult(page: number, pageSize: number) {
   return { properties: [] as PublicProperty[], total: 0, page, pageSize };
