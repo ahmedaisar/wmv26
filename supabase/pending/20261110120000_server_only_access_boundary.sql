@@ -242,3 +242,7 @@ grant execute on function public.transition_article(
   timestamptz,
   text
 ) to service_role;
+
+-- Existing BEFORE UPDATE triggers still execute under the server's table role.
+grant execute on function public.set_profile_updated_at() to service_role;
+grant execute on function public.set_editorial_updated_at() to service_role;
