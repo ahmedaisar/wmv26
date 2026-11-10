@@ -27,6 +27,7 @@ The PR gate intentionally does not start Docker/Supabase, apply migrations, run 
 ## Comprehensive validation
 `.github/workflows/release-validation.yml` runs:
 - On manual `workflow_dispatch`
+- On a deliberate one-off push to `release-validation/**` (used when the full gate is needed before a release without running it on every feature branch)
 - Weekly (Monday 03:17 UTC)
 - On a `v*` release tag
 
