@@ -20,13 +20,13 @@ export default function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="taste-app" data-radius="soft">
+    <>
       {children}
       <Script
         src="/taste-skill/assets/moments/moments.js"
         strategy="afterInteractive"
         type="module"
       />
-    </div>
+    </>
   );
 }
