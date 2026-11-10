@@ -48,7 +48,8 @@ export type Database = {
           author_id: string; category_id: string | null; created_by: string; reviewed_by: string | null;
           published_by: string | null; seo_title: string | null; seo_description: string | null;
           canonical_url: string | null; scheduled_at: string | null; published_at: string | null;
-          is_featured: boolean; search_vector: unknown;
+          is_featured: boolean; hero_image_url: string | null; hero_image_alt: string | null;
+          hero_image_credit: string | null; reading_time_minutes: number | null; search_vector: unknown;
         } & Timestamps;
         Insert: {
           id?: string; slug: string; title: string; excerpt?: string | null; body?: Json;
@@ -56,7 +57,8 @@ export type Database = {
           author_id: string; category_id?: string | null; created_by: string; reviewed_by?: string | null;
           published_by?: string | null; seo_title?: string | null; seo_description?: string | null;
           canonical_url?: string | null; scheduled_at?: string | null; published_at?: string | null;
-          is_featured?: boolean; created_at?: string; updated_at?: string;
+          is_featured?: boolean; hero_image_url?: string | null; hero_image_alt?: string | null;
+          hero_image_credit?: string | null; reading_time_minutes?: number | null; created_at?: string; updated_at?: string;
         };
         Update: {
           slug?: string; title?: string; excerpt?: string | null; body?: Json;
@@ -64,7 +66,8 @@ export type Database = {
           author_id?: string; category_id?: string | null; reviewed_by?: string | null;
           published_by?: string | null; seo_title?: string | null; seo_description?: string | null;
           canonical_url?: string | null; scheduled_at?: string | null; published_at?: string | null;
-          is_featured?: boolean; updated_at?: string;
+          is_featured?: boolean; hero_image_url?: string | null; hero_image_alt?: string | null;
+          hero_image_credit?: string | null; reading_time_minutes?: number | null; updated_at?: string;
         };
         Relationships: EditorialRelationships;
       };
