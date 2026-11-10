@@ -1,32 +1,39 @@
 # Staff authentication and authorization
 
 ## Trust boundaries
-- Supabase Auth establishes identity. Server-side getUser() validates the session with Supabase.
-- The profiles table is the authoritative source of application roles.
+- Supabase Auth establishes identity. The server validates the access token with `auth.getUser(accessToken)`; it never trusts a decoded token or client-supplied identity.
+- The `profiles` table is the authoritative source of application roles.
 - User-editable auth metadata is never used for authorization.
-- Profile role is not writable by authenticated users; database grants allow only display name/avatar updates.
-- RLS remains the final data-access boundary. UI visibility and the Next.js proxy are not substitutes for database policies.
+- Profile role is not writable by authenticated users.
+- The browser receives only opaque HttpOnly, Secure-in-production, SameSite=Lax cookies for the access token, refresh token and expiry. It receives no Supabase key and performs no Supabase Data API query.
+- The server's Supabase secret key bypasses RLS. Every protected server operation must independently verify the user and profile role before accessing private data or mutating state.
 
 ## Roles
-admin, editor, journalist, contributor and commercial. Permissions for each feature must be enforced in server-side operations and matching RLS policies. Not every authenticated user is a staff member.
+admin, editor, journalist, contributor and commercial. Permissions for each feature must be enforced in server-side operations. Not every authenticated user is a staff member.
 
-## Current implementation
-- Invitation-only password sign-in using Supabase Auth.
-- Sign-out server action.
-- Next.js proxy refreshes Supabase cookies on /admin routes and validates the user session.
-- Protected admin route-group layout checks the current auth user and profile role on the server.
-- Missing profiles or unsupported roles go to an access-denied page.
-- Sign-in return path is constrained to same-origin relative paths.
+## Session lifecycle
+- Invitation-only password sign-in uses a server action and the server-only Supabase client.
+- Access and refresh tokens are stored in HttpOnly cookies; tokens are never returned to client components or serialized into page props.
+- The Next.js proxy refreshes an expiring session and only performs session maintenance. It is not an authorization gate.
+- Protected layouts/actions call `auth.getUser(accessToken)` and read the matching profile role from the database on the server.
+- Sign-out revokes the refresh session globally and clears all session cookies.
 - Signup remains disabled; no public registration route exists.
+- Sign-in return path is constrained to same-origin relative paths.
+
+## Database boundary
+- The target posture is RLS enabled with zero policies on application tables, and no `anon`/`authenticated` table, sequence or function grants.
+- The grant-revocation migration is staged under `supabase/pending/` and tested against local Supabase in CI. It has not been applied to hosted databases; legacy grants and policies remain there until a separately approved promotion.
+- The server's secret key is the only application credential that bypasses RLS and accesses application tables.
+- The auth-user trigger may insert the initial contributor profile. The trigger function is SECURITY DEFINER with an empty search path; it is the only application-schema definer function.
+- `transition_article` is an invoker function granted only to `service_role`; it verifies the supplied actor against `profiles`, checks the role/ownership/state transition and records revision/status history atomically.
 
 ## Account provisioning
-The owner must provision staff identities through the trusted Supabase operator workflow. New auth users receive contributor by default through the database trigger. Role elevation must be performed by an authorized operator until the admin user-management workflow is implemented. Never promote a user based on a client-supplied role or signup metadata.
+The owner must provision staff identities through a trusted Supabase operator workflow. New auth users receive contributor by default through the database trigger. Role elevation must be performed by an authorized operator until the admin user-management workflow is implemented. Never promote a user based on a client-supplied role or signup metadata.
 
-## Future security requirements
-- Re-check authorization in every Server Action and Route Handler that reads or mutates protected data.
-- Apply explicit grants and RLS to every new table and storage bucket.
-- Test anonymous access and each role.
-- Use getUser(), not getSession(), as the server-side identity check.
-- Validate all form inputs and constrain redirects.
-- Apply rate limits/CAPTCHA and email-provider protections before production.
-- Audit role changes and sensitive publishing operations.
+## Required checks for each new protected feature
+- Verify the user through Supabase Auth on the server.
+- Read the authoritative profile role from the database; do not trust metadata.
+- Check permission and resource ownership in the server action/route handler before any service-key query or mutation.
+- Validate every mutation with Zod and preserve same-origin protections.
+- Test signed-out, each allowed role, each refused role and ownership boundaries.
+- Never serialize the service key, auth tokens or private profile fields into client props.

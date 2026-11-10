@@ -1,22 +1,21 @@
-import { z } from "zod";
+import "server-only";
 
-const supabaseEnvSchema = z.object({
-  url: z.string().url("NEXT_PUBLIC_SUPABASE_URL must be a valid URL"),
-  anonKey: z.string().min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY is required"),
-});
+import { parseSupabaseServerEnv } from "@/lib/env-schema";
 
-export type SupabasePublicEnv = z.infer<typeof supabaseEnvSchema>;
+export { parseSupabaseServerEnv } from "@/lib/env-schema";
+export type { SupabaseServerEnv } from "@/lib/env-schema";
 
-export function parseSupabasePublicEnv(input: {
-  url?: string;
-  anonKey?: string;
-}): SupabasePublicEnv {
-  return supabaseEnvSchema.parse(input);
+export function getSupabaseServerEnv() {
+  return parseSupabaseServerEnv({
+    // The URL-only legacy fallback is safe to retain during environment migration.
+    url: process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL,
+    secretKey: process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY,
+  });
 }
 
-export function getSupabasePublicEnv(): SupabasePublicEnv {
-  return parseSupabasePublicEnv({
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  });
+export function isSupabaseServerConfigured(): boolean {
+  return Boolean(
+    (process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    (process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY),
+  );
 }

@@ -3,6 +3,7 @@ import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { PublishedArticle } from "@/lib/editorial";
 import type { Database } from "@/types/database";
+import { isSupabaseServerConfigured } from "@/lib/env";
 
 type ArticleRow = Database["public"]["Tables"]["articles"]["Row"];
 const articleFields = "id,slug,title,excerpt,body,article_type,disclosure,author_id,category_id,seo_title,seo_description,canonical_url,published_at,is_featured,hero_image_url,hero_image_alt,hero_image_credit,reading_time_minutes,created_at,updated_at";
@@ -13,9 +14,9 @@ async function hydrate(rows: ArticleRow[]): Promise<PublishedArticle[]> {
   const authorIds = [...new Set(rows.map((row) => row.author_id))];
   const categoryIds = [...new Set(rows.flatMap((row) => row.category_id ? [row.category_id] : []))];
   const [authorResult, categoryResult] = await Promise.all([
-    supabase.from("authors").select("id,slug,display_name,bio,avatar_url").in("id", authorIds),
+    supabase.from("authors").select("id,slug,display_name,bio,avatar_url").in("id", authorIds).eq("is_active", true),
     categoryIds.length
-      ? supabase.from("categories").select("id,slug,name").in("id", categoryIds)
+      ? supabase.from("categories").select("id,slug,name").in("id", categoryIds).eq("is_active", true)
       : Promise.resolve({ data: [], error: null }),
   ]);
   const authors = new Map((authorResult.data ?? []).map((item) => [item.id, item]));
@@ -28,6 +29,7 @@ async function hydrate(rows: ArticleRow[]): Promise<PublishedArticle[]> {
 }
 
 async function publishedBy(column: "category_id" | "author_id", id: string) {
+  if (!isSupabaseServerConfigured()) return [];
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
@@ -42,6 +44,7 @@ async function publishedBy(column: "category_id" | "author_id", id: string) {
 }
 
 export async function getPublicCategory(slug: string) {
+  if (!isSupabaseServerConfigured()) return null;
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("categories")
     .select("id,slug,name,description")
@@ -51,6 +54,7 @@ export async function getPublicCategory(slug: string) {
 }
 
 export async function getPublicTag(slug: string) {
+  if (!isSupabaseServerConfigured()) return null;
   const supabase = await createSupabaseServerClient();
   const { data: tag } = await supabase.from("tags")
     .select("id,slug,name,description")
@@ -68,6 +72,7 @@ export async function getPublicTag(slug: string) {
 }
 
 export async function getPublicAuthor(slug: string) {
+  if (!isSupabaseServerConfigured()) return null;
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("authors")
     .select("id,slug,display_name,bio,avatar_url")

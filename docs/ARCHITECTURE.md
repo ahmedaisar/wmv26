@@ -1,9 +1,9 @@
 # WheresMaldives.com — Technical Architecture
 
-Version 1.0 | Proposed baseline
+Version 1.1 | Server-only Supabase access boundary
 
 ## Overview
-One Next.js App Router application backed by Supabase PostgreSQL, Supabase Auth and Supabase Storage. Public content is server-rendered and cacheable. Admin operations are authenticated, server-authorized and additionally constrained by RLS.
+One Next.js App Router application backed by Supabase PostgreSQL, Supabase Auth and Supabase Storage. Public content is server-rendered. The browser never receives a Supabase key or queries the Data API. The app server uses one server-only Supabase secret key and performs explicit authorization before returning private data or accepting mutations.
 
 ## Stack
 | Layer | Choice |
@@ -17,7 +17,7 @@ One Next.js App Router application backed by Supabase PostgreSQL, Supabase Auth 
 | Media | Supabase Storage |
 | Validation | Zod |
 | Forms | React Hook Form |
-| Tests | Vitest + Playwright |
+| Tests | Vitest + pgTAP; browser proof is a separate gate |
 | Hosting | Vercel |
 | Email | Resend, when configured |
 | Analytics | PostHog or privacy-friendly alternative |
@@ -54,14 +54,22 @@ docs/
 
 ## Rendering and data flow
 - Public reads use Server Components and queries scoped to published/active records.
+- Public database reads are dynamic and use `cache: "no-store"`; they are not shared through Next.js's data cache.
 - Generate page metadata and canonical URLs.
-- Revalidate public cache after authorized publish/unpublish/property changes.
-- Admin routes require a session and role.
+- Revalidate public cache after authorized publish/unpublish/property changes (once caching is deliberately introduced).
+- Admin routes require a verified Supabase Auth user and a profile role read from the database on the server.
 - Server Actions handle same-origin mutations; Route Handlers handle webhooks/external endpoints.
 - Validate each mutation with Zod, check role and record scope, and record audit events.
+- The Next.js proxy may refresh an expiring auth cookie. It never decides authorization; every protected server operation verifies the user and role itself.
 
 ## Supabase client boundaries
-Create separate browser and server user-context clients. User-scoped server operations must forward the authenticated session so RLS applies. A privileged server-only client may be used only for narrowly defined jobs that cannot run under user-scoped RLS. Never expose service-role credentials to client bundles. Prefer user-scoped operations and RLS over bypassing RLS.
+- Exactly one Supabase client factory exists in `src/lib/supabase/server.ts`, marked `server-only`.
+- It uses `SUPABASE_SECRET_KEY` (or the temporary legacy `SUPABASE_SERVICE_ROLE_KEY` fallback), disables session persistence/automatic refresh and applies a bounded no-store fetch.
+- No browser client, `@supabase/ssr`, anon key or publishable key is used by application code.
+- The secret key bypasses RLS. Therefore it is a high-impact credential and every data path is constrained in server code: public query helpers hard-code published/active filters; staff helpers verify the Auth user and authoritative `profiles.role`; mutations validate input and actor permissions before writing.
+- RLS remains enabled with zero policies on application tables. `anon` and `authenticated` have no table or function grants. This is a deny-all backstop if a non-secret key is ever introduced accidentally. The server secret key is the only application credential with database access.
+- `transition_article` is an invoker RPC executable only by `service_role`; it takes a verified actor id and checks the actor's database role and article ownership/state before performing its atomic transition.
+- No identity token is forwarded as a PostgREST bearer token. Supabase Auth tokens are sent only to the Auth API for user verification/session refresh.
 
 ## Data domains
 Identity: `profiles`, `authors`.
@@ -74,39 +82,34 @@ Deferred commercial: `advertisers`, `campaigns`, `sponsored_placements`.
 
 Use UUID primary keys, normalized slugs, foreign keys, timestamps and workload-appropriate indexes. Hotel belongs to island; island belongs to atoll. Articles have authors, optional categories and many-to-many tags. Property verification source, timestamp and actor must be traceable. Unknown facts remain null.
 
-## RLS policy stance
-Enable RLS on all tables exposed through Supabase APIs. Default is deny unless explicitly granted.
-- Anonymous: select published articles and active properties only.
-- Contributor: own permitted drafts/submissions.
-- Journalist: own/assigned drafts, no publish.
-- Editor: editorial read/write/publish.
-- Commercial: assigned enquiries/campaigns; no editorial draft access by default.
-- Administrator: privileged management.
+## RLS and grants — target posture
+After the staged deny-all migration is promoted, application tables have RLS enabled and zero policies. Revoke `PUBLIC`, `anon` and `authenticated` table/sequence/function/type grants, including both global and schema-specific default privileges. Explicitly grant the server's `service_role` the table, sequence, function and type privileges required by the application. The only SECURITY DEFINER function in the application schema is the auth-user trigger that creates the initial profile; it is pinned to an empty search path. Catalog and pgTAP tests pin this target posture.
 
-Use carefully reviewed helper functions to avoid recursive profile-policy problems. Test anonymous access and every role.
+**Current hosted state:** the deny-all migration remains under `supabase/pending/` and has only been applied to disposable local CI. Hosted Supabase still has its previous anon/authenticated grants and RLS policies until a separately approved CLI promotion.
 
 ## Storage
-Separate public editorial/property assets from private unpublished uploads. Validate MIME, size and path. Store alt text, source/credit, dimensions and focal position. Upload permission does not imply publish permission.
+Storage is not yet configured. When introduced, use server-mediated uploads or narrowly scoped signed upload flows; validate MIME, size and path. Store alt text, source/credit, dimensions and focal position. Upload permission does not imply publish permission.
 
 ## Search and SEO
 Start with PostgreSQL full-text search and indexed normalized fields. Results include only published articles and active properties. Keep filters URL-addressable. Public pages server-render with canonical metadata, sitemap, robots, Open Graph and truthful structured data.
 
 ## Environments and secrets
-Separate development, staging and production Supabase projects where practical. Map hosting environments to the correct project. Expected variable names only (never commit values): `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` or current publishable key, `SUPABASE_SERVICE_ROLE_KEY` (server only if needed), `RESEND_API_KEY` and analytics keys if selected. No production secrets in PR logs or screenshots.
+Use separate development and production Supabase projects. Server runtime variables: `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `NEXT_PUBLIC_SITE_URL`. `SUPABASE_SERVICE_ROLE_KEY` is accepted temporarily as a server-only legacy fallback. Never set a Supabase key with a `NEXT_PUBLIC_` prefix. Keep operator database URLs outside the repository; migrations are applied by the CLI to an explicitly named target, never through the MCP or an implicit linked project. No hosted migration is authorized by this change.
+
+## CI/CD delivery
+See `CI_CD.md` for the lightweight GitHub PR gate, Vercel-native Preview/Production deployment model, scheduled/release validation and branch-protection requirement.
 
 ## Observability
 Structured logs without secrets/PII, error monitoring, uptime checks, backups and tested restore, migrations in source control, alerts for email/publishing failures.
 
 ## Architecture decisions
 1. One Next.js App Router application; public content server-rendered.
-2. Supabase relational backend; RLS mandatory.
-3. Custom editorial CMS for MVP; reassess only if editorial workflow outgrows it.
-4. No booking engine in MVP; official outbound links and enquiries first.
-5. English-first content; model entities for future localization.
-6. PE `ui-design` governs screen design. Taste Skill `design-taste-frontend` supplements art direction and browser visual review; Node 22+ and Chrome/Edge/Chromium are required for browser checks.
-
-## Open technical decisions
-Confirm Supabase project/region, Vercel project/team/domain, newsletter and analytics providers, rich-text editor, image transformation/storage approach and staff role assignments.
+2. Supabase relational backend; RLS deny-all for API roles, with the server secret as the only database credential.
+3. Supabase Auth for staff identity; profiles are the authoritative application role source.
+4. Custom editorial CMS for MVP; reassess only if editorial workflow outgrows it.
+5. No booking engine in MVP; official outbound links and enquiries first.
+6. English-first content; model entities for future localization.
+7. PE `ui-design` governs screen design. Taste Skill supplements art direction and browser visual review.
 
 ## Supabase implementation status
-The Supabase foundation now includes browser/server user-context clients, Zod-validated public environment values, local CLI configuration and a profile/role migration. No hosted project is linked and no remote migration has been applied. See `SUPABASE_SETUP.md` for local and hosted operator steps.
+The server-only client boundary is implemented. The deny-all grant migration is staged in `supabase/pending/` and is applied to the disposable local database in CI after the normal migration reset. It is deliberately not in `supabase/migrations/`, so a code merge cannot trigger a breaking hosted schema change. Until an operator separately promotes it, hosted databases retain their legacy anon/authenticated grants and policies. See `SUPABASE_SETUP.md` for the controlled promotion sequence.

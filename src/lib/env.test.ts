@@ -1,36 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { parseSupabasePublicEnv } from "./env";
+import { parseSupabaseServerEnv } from "./env-schema";
 
-describe("Supabase public environment", () => {
-  it("accepts a project URL and anon key", () => {
+describe("Supabase server environment", () => {
+  it("accepts a project URL and server-only secret key", () => {
     expect(
-      parseSupabasePublicEnv({
+      parseSupabaseServerEnv({
         url: "https://project-ref.supabase.co",
-        anonKey: "public-anon-key",
+        secretKey: "sb_secret_test_key",
       }),
     ).toEqual({
       url: "https://project-ref.supabase.co",
-      anonKey: "public-anon-key",
+      secretKey: "sb_secret_test_key",
     });
   });
 
   it("rejects a missing URL", () => {
-    expect(() => parseSupabasePublicEnv({ anonKey: "public-anon-key" })).toThrow();
+    expect(() => parseSupabaseServerEnv({ secretKey: "sb_secret_test_key" })).toThrow();
   });
 
   it("rejects an invalid URL", () => {
     expect(
-      () => parseSupabasePublicEnv({ url: "not-a-url", anonKey: "public-anon-key" }),
+      () => parseSupabaseServerEnv({ url: "not-a-url", secretKey: "sb_secret_test_key" }),
     ).toThrow();
   });
 
-  it("rejects an empty key", () => {
+  it("rejects a missing or empty secret key", () => {
+    expect(() => parseSupabaseServerEnv({ url: "https://project-ref.supabase.co" })).toThrow();
     expect(
-      () =>
-        parseSupabasePublicEnv({
-          url: "https://project-ref.supabase.co",
-          anonKey: "",
-        }),
+      () => parseSupabaseServerEnv({ url: "https://project-ref.supabase.co", secretKey: "" }),
     ).toThrow();
   });
 });

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isSupabaseServerConfigured } from "@/lib/env";
 import type { Database } from "@/types/database";
 
 type ArticleRow = Database["public"]["Tables"]["articles"]["Row"];
@@ -34,24 +35,17 @@ export type PublishedArticle = Pick<
   category: Pick<CategoryRow, "slug" | "name"> | null;
 };
 
-export function isEditorialConfigured() {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-}
-
 async function hydrateArticles(rows: ArticleRow[]): Promise<PublishedArticle[]> {
   if (rows.length === 0) return [];
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   const authorIds = [...new Set(rows.map((article) => article.author_id))];
   const categoryIds = [...new Set(rows.flatMap((article) => article.category_id ? [article.category_id] : []))];
 
   const [authorsResult, categoriesResult] = await Promise.all([
-    supabase.from("authors").select("id,slug,display_name,bio,avatar_url").in("id", authorIds),
+    supabase.from("authors").select("id,slug,display_name,bio,avatar_url").in("id", authorIds).eq("is_active", true),
     categoryIds.length
-      ? supabase.from("categories").select("id,slug,name").in("id", categoryIds)
+      ? supabase.from("categories").select("id,slug,name").in("id", categoryIds).eq("is_active", true)
       : Promise.resolve({ data: [], error: null }),
   ]);
 
@@ -65,9 +59,13 @@ async function hydrateArticles(rows: ArticleRow[]): Promise<PublishedArticle[]> 
   }));
 }
 
+export function isEditorialConfigured() {
+  return isSupabaseServerConfigured();
+}
+
 export async function getPublishedArticles(limit = 12): Promise<PublishedArticle[]> {
   if (!isEditorialConfigured()) return [];
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
     .select("id,slug,title,excerpt,body,article_type,disclosure,author_id,category_id,seo_title,seo_description,canonical_url,published_at,is_featured,hero_image_url,hero_image_alt,hero_image_credit,reading_time_minutes,created_at,updated_at")
@@ -82,7 +80,7 @@ export async function getPublishedArticles(limit = 12): Promise<PublishedArticle
 
 export async function getPublishedArticleBySlug(slug: string): Promise<PublishedArticle | null> {
   if (!isEditorialConfigured()) return null;
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
     .select("id,slug,title,excerpt,body,article_type,disclosure,author_id,category_id,seo_title,seo_description,canonical_url,published_at,is_featured,hero_image_url,hero_image_alt,hero_image_credit,reading_time_minutes,created_at,updated_at")
