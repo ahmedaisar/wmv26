@@ -5,7 +5,7 @@ Premium Maldives travel media and discovery platform.
 **Positioning:** The Maldives. Beyond the Ordinary.
 
 ## Stack
-Next.js App Router, TypeScript, Tailwind CSS and (in the next foundation phase) Supabase for data, authentication and media.
+Next.js App Router, TypeScript, Tailwind CSS and Supabase for data and staff authentication. Application database access is being moved behind a server-only boundary; see `docs/SUPABASE_SETUP.md`.
 
 ## Local development
 Requires Node.js 22+.
@@ -36,7 +36,7 @@ npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-fro
 The upstream workflow requires Node.js 22+ and Chrome, Edge or Chromium for browser inspection. Follow the installed skill's current project-start and visual-review instructions. PE MCP `ui-design` remains the governing product design workflow.
 
 ## Environment
-Copy `.env.example` to `.env.local`. Supabase values remain blank until a project is provisioned. Never commit real secrets. A service-role key, if later required, must remain server-only.
+Copy `.env.example` to `.env.local`. Use the local Supabase URL and server-only secret/service-role key from `npx supabase start`. Never commit real secrets or use a `NEXT_PUBLIC_` prefix for a Supabase key.
 
 ## Project docs
 See `docs/` for the product baseline, proposal, requirements, architecture, design direction and implementation plan. All implementation changes are delivered through pull requests.
