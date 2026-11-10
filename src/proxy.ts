@@ -1,35 +1,56 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import type { Database } from "@/types/database";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  AUTH_ACCESS_COOKIE,
+  AUTH_EXPIRY_COOKIE,
+  AUTH_REFRESH_COOKIE,
+  authCookieOptions,
+} from "@/lib/auth-session";
 
+// This proxy refreshes the Supabase Auth session only. Authorization remains
+// in server-side route/layout/action code and is never decided by a path list.
 export async function proxy(request: NextRequest) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const refreshToken = request.cookies.get(AUTH_REFRESH_COOKIE)?.value;
+  if (!refreshToken) return NextResponse.next({ request });
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  const expiresAt = Number(request.cookies.get(AUTH_EXPIRY_COOKIE)?.value ?? 0);
+  if (Number.isFinite(expiresAt) && expiresAt * 1000 > Date.now() + 60_000) {
     return NextResponse.next({ request });
   }
 
-  let response = NextResponse.next({ request });
-  const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        for (const { name, value } of cookiesToSet) {
-          request.cookies.set(name, value);
-        }
-        response = NextResponse.next({ request });
-        for (const { name, value, options } of cookiesToSet) {
-          response.cookies.set(name, value, options);
-        }
-      },
-    },
-  });
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshToken });
 
-  // Validate with Supabase and refresh expiring cookies; never authorize via getSession().
-  await supabase.auth.getUser();
+  if (error || !data.session) {
+    const response = NextResponse.next({ request });
+    for (const name of [AUTH_ACCESS_COOKIE, AUTH_REFRESH_COOKIE, AUTH_EXPIRY_COOKIE]) {
+      response.cookies.set(name, "", authCookieOptions(0));
+    }
+    return response;
+  }
+
+  const expiresAtNext =
+    data.session.expires_at ?? Math.floor(Date.now() / 1000) + data.session.expires_in;
+  request.cookies.set(AUTH_ACCESS_COOKIE, data.session.access_token);
+  request.cookies.set(AUTH_REFRESH_COOKIE, data.session.refresh_token);
+  request.cookies.set(AUTH_EXPIRY_COOKIE, String(expiresAtNext));
+
+  const response = NextResponse.next({ request });
+  response.cookies.set(
+    AUTH_ACCESS_COOKIE,
+    data.session.access_token,
+    authCookieOptions(data.session.expires_in),
+  );
+  response.cookies.set(
+    AUTH_REFRESH_COOKIE,
+    data.session.refresh_token,
+    authCookieOptions(60 * 60 * 24 * 30),
+  );
+  response.cookies.set(
+    AUTH_EXPIRY_COOKIE,
+    String(expiresAtNext),
+    authCookieOptions(data.session.expires_in),
+  );
   return response;
 }
 
