@@ -76,7 +76,7 @@ Identity: `profiles`, `authors`.
 Editorial: `articles`, `article_revisions`, `categories`, `tags`, `article_tags`.
 Media: `media_assets`.
 Geography: `atolls`, `islands`.
-Properties: `hotels`, `hotel_images`, `facilities`, `hotel_facilities`.
+Properties: `atolls`, `islands`, `properties`, `facilities`, `property_facilities`, `property_media`, `property_verification_events`, `property_status_events`.
 Audience/operations: `newsletter_subscribers`, `enquiries`, `audit_logs`.
 Deferred commercial: `advertisers`, `campaigns`, `sponsored_placements`.
 
@@ -93,6 +93,14 @@ Start with PostgreSQL full-text search and indexed normalized fields. Results in
 
 ## Environments and secrets
 Use separate development and production Supabase projects. Server runtime variables: `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `NEXT_PUBLIC_SITE_URL`. `SUPABASE_SERVICE_ROLE_KEY` is accepted temporarily as a server-only legacy fallback. Never set a Supabase key with a `NEXT_PUBLIC_` prefix. Keep operator database URLs outside the repository; migrations are applied by the CLI to an explicitly named target, never through the MCP or an implicit linked project. No hosted migration is authorized by this change.
+
+## Related documents
+- `PRD.md` — product requirements and role matrix.
+- `IMPLEMENTATION_PLAN.md` — phase delivery and acceptance gates.
+- `PROPERTY_SCHEMA.md` — Phase 3A property/geography schema and server query contract.
+- `AUTHORIZATION.md` — staff identity and authorization boundaries.
+- `SUPABASE_SETUP.md` — local/hosted database operation.
+- `CI_CD.md` — PR, Preview, Production and release-validation flow.
 
 ## CI/CD delivery
 See `CI_CD.md` for the lightweight GitHub PR gate, Vercel-native Preview/Production deployment model, scheduled/release validation and branch-protection requirement.
