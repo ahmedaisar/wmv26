@@ -27,7 +27,7 @@ function renderBody(body: Json) {
       const key = `block-${index}`;
       if (!content.trim()) return null;
       if (block.type === "heading" || block.type === "h2") return <h2 className="mb-5 mt-12 text-3xl font-medium leading-tight tracking-[-0.04em] text-ocean" key={key}>{content}</h2>;
-      if (block.type === "quote") return <blockquote className="my-10 border-l-2 border-lagoon pl-6 font-serif text-2xl leading-relaxed text-ocean" key={key}>{content}</blockquote>;
+      if (block.type === "quote") return <blockquote className="my-10 border-l-2 border-lagoon pl-6 text-2xl leading-relaxed text-ocean" key={key}>{content}</blockquote>;
       if (block.type === "list-item") return <li className="ml-5 list-disc pl-2 text-[17px] leading-8 text-ink/90" key={key}>{content}</li>;
       return <p className="mb-6 text-[17px] leading-[1.9] text-ink/90" key={key}>{content}</p>;
     });
@@ -74,7 +74,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {date ? <><span aria-hidden="true">/</span><time dateTime={article.published_at ?? undefined}>{date}</time></> : null}
             {article.reading_time_minutes ? <><span aria-hidden="true">/</span><span>{article.reading_time_minutes} min read</span></> : null}
           </div>
-          <h1 className="mt-7 font-serif text-4xl font-medium leading-[1.08] tracking-[-0.045em] text-ocean md:text-6xl">{article.title}</h1>
+          <h1 className="mt-7 text-4xl font-medium leading-[1.08] tracking-[-0.045em] text-ocean md:text-6xl">{article.title}</h1>
           {article.excerpt ? <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-muted">{article.excerpt}</p> : null}
           <p className="mt-7 text-xs text-muted">By <span className="font-semibold text-ocean">{article.author?.display_name ?? "WheresMaldives Editorial"}</span></p>
           {article.disclosure !== "none" ? <p className="mt-4 text-[10px] uppercase tracking-[0.16em] text-muted">{article.disclosure === "sponsored" ? "Sponsored content" : "Affiliate disclosure"}</p> : null}
