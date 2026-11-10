@@ -107,4 +107,4 @@ Structured logs without secrets/PII, error monitoring, uptime checks, backups an
 7. PE `ui-design` governs screen design. Taste Skill supplements art direction and browser visual review.
 
 ## Supabase implementation status
-The server-only client boundary and deny-all migration are implemented in this change. Hosted environments must receive `SUPABASE_SECRET_KEY` before the change is promoted; no hosted database migration is applied here. See `SUPABASE_SETUP.md` for local and hosted operator steps.
+The server-only client boundary is implemented. The deny-all grant migration is staged in `supabase/pending/` and is applied to the disposable local database in CI after the normal migration reset. It is deliberately not in `supabase/migrations/`, so a code merge cannot trigger a breaking hosted schema change. Until an operator separately promotes it, hosted databases retain their legacy anon/authenticated grants and policies. See `SUPABASE_SETUP.md` for the controlled promotion sequence.
