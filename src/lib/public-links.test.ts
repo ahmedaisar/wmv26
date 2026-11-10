@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildPropertyDirectoryHref, safeExternalUrl } from "@/lib/public-links";
+import { buildPropertyDirectoryHref, safeExternalUrl } from "./public-links";
 
 describe("safeExternalUrl", () => {
   it("accepts http and https URLs", () => {
