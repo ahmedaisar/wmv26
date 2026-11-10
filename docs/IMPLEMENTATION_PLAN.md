@@ -31,13 +31,13 @@ Exit: scope/non-goals documented, security principles reviewed, design process d
 1. `chore/app-bootstrap`: Next.js App Router, TypeScript, lint/test scripts, README and `.env.example`.
 2. `chore/taste-skill`: install or document reproducible skill setup; record source/version and verify command.
 3. `feat/design-foundation`: tokens, typography, layout primitives and responsive shell.
-4. `feat/supabase-foundation`: client boundaries, env validation and migration workflow.
+4. `feat/supabase-foundation`: server-only client boundary, env validation, deny-all target grants and explicit migration promotion workflow (PR #14).
 5. `feat/auth-foundation`: staff sign-in, profile lookup and role checks.
 6. `feat/ci`: lint, typecheck and test automation.
 Exit: app starts from documented steps; build/lint/typecheck/tests pass; no secrets committed; RLS/least privilege in place; staging configurable.
 
 ## Phase 2 — Editorial MVP
-PRs for editorial schema/RLS; public home/editorial shell; article/category/tag/author routes; admin dashboard/list; editor/media/revisions; review-schedule-publish workflow; SEO/sitemap/structured data.
+PRs for editorial schema/RLS; public home/editorial shell; article/category/tag/author routes; admin dashboard/list; editor/media/revisions; review-schedule-publish workflow; SEO/sitemap/structured data. Public category/tag/author routes were delivered in PR #12. The server-only Supabase access boundary is being established in PR #14 before the editorial admin PR #8 is adapted and merged.
 Exit: editors publish end-to-end; anonymous users cannot read drafts; metadata/sitemap validate; visual/accessibility checks pass.
 
 ## Phase 3 — Hotel and destination discovery
