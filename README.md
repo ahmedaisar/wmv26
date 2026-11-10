@@ -40,3 +40,6 @@ Copy `.env.example` to `.env.local`. Supabase values remain blank until a projec
 
 ## Project docs
 See `docs/` for the product baseline, proposal, requirements, architecture, design direction and implementation plan. All implementation changes are delivered through pull requests.
+
+## Editorial data model
+See `docs/EDITORIAL_SCHEMA.md` for the content tables, publishing states and database access policies.
