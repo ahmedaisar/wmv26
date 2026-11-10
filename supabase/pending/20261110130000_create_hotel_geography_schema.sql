@@ -116,7 +116,7 @@ create table public.properties (
         and island_id is not null
         and is_active = true
       )
-    ),
+    )
 );
 
 create table public.facilities (
