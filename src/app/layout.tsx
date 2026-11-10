@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   title: {
     default: "WheresMaldives.com — The Maldives. Beyond the Ordinary.",
     template: "%s | WheresMaldives.com",
