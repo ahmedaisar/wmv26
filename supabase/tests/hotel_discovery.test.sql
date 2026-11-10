@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(30);
+select plan(34);
 
 select is(
   (select count(*)::integer
@@ -61,6 +61,10 @@ select ok(not has_table_privilege('authenticated', 'public.properties', 'SELECT'
 select ok(has_table_privilege('service_role', 'public.properties', 'SELECT'), 'server role can read properties');
 select ok(not has_table_privilege('anon', 'public.property_media', 'SELECT'), 'anon cannot read property media directly');
 select ok(not has_table_privilege('authenticated', 'public.property_status_events', 'SELECT'), 'authenticated cannot read private property status history');
+select ok(not has_table_privilege('service_role', 'public.property_status_events', 'UPDATE'), 'property status history is append-only');
+select ok(not has_table_privilege('service_role', 'public.property_status_events', 'DELETE'), 'property status history cannot be deleted by the server role');
+select ok(not has_table_privilege('service_role', 'public.property_verification_events', 'UPDATE'), 'verification history is append-only');
+select ok(not has_table_privilege('service_role', 'public.property_verification_events', 'DELETE'), 'verification history cannot be deleted by the server role');
 
 select ok(
   to_regprocedure('public.transition_property(uuid,uuid,public.property_status,text,text,text)') is not null,
