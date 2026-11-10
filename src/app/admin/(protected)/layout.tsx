@@ -2,6 +2,8 @@ import Link from "next/link";
 import { requireRoles } from "@/lib/auth";
 import { signOut } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 const staffRoles = ["admin", "editor", "journalist", "contributor", "commercial"] as const;
 
 export default async function ProtectedAdminLayout({

@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { signIn } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 type SignInPageProps = {
   searchParams: Promise<{ error?: string; next?: string }>;
 };
