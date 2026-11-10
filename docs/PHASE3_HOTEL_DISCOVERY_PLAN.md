@@ -1,6 +1,6 @@
 # Phase 3 — Hotel and destination discovery implementation plan
 
-**Status:** proposed implementation sequence; no schema or hosted data changed by this document  
+**Status:** Phase 3A schema implementation in PR #15; SQL is staged for local/release validation only, with no hosted data changed  
 **Product plan:** `docs/IMPLEMENTATION_PLAN.md`, Phase 3  
 **Gap baseline:** `docs/IMPLEMENTATION_GAP_REVIEW.md`, Gate 2
 
