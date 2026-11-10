@@ -45,3 +45,5 @@ See `docs/` for the product baseline, proposal, requirements, architecture, desi
 See `docs/EDITORIAL_SCHEMA.md` for the content tables, publishing states and database access policies.
 
 See `docs/EDITORIAL_WORKFLOW.md` for the atomic article transition RPC and publication rules.
+
+Design workflow: see `docs/TASTE_SKILL.md` and run `bash scripts/taste-deal.sh software saas` for the admin app.
