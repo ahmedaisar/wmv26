@@ -72,11 +72,15 @@ jobs:
       - name: Reset local database from migrations
         run: npx --yes supabase@2 db reset
 
-      - name: Apply staged server-only boundary SQL locally
+      - name: Apply staged SQL migrations locally in order
         run: |
           DB_CONTAINER="$(docker ps --format '{{.Names}}' | grep '^supabase_db_' | head -n 1)"
           test -n "$DB_CONTAINER"
-          docker exec -i "$DB_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < supabase/pending/20261110120000_server_only_access_boundary.sql
+          for migration in supabase/pending/*.sql; do
+            [ -f "$migration" ] || continue
+            echo "Applying $migration"
+            docker exec -i "$DB_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < "$migration"
+          done
 
       - name: Run pgTAP
         run: npx --yes supabase@2 test db
