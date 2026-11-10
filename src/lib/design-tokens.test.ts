@@ -9,7 +9,7 @@ const screens = [
   "src/app/page.tsx", "src/app/hotels/page.tsx", "src/app/hotels/[slug]/page.tsx",
   "src/app/destinations/page.tsx", "src/app/atolls/[slug]/page.tsx",
   "src/app/islands/[slug]/page.tsx", "src/components/property-card.tsx",
-].map((path) => readFileSync(join(process.cwd(), path), "utf8")).join("\\n");
+].map((path) => readFileSync(join(process.cwd(), path), "utf8")).join("\n");
 
 function token(name: string) {
   const value = tokens.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})\\s*;`))?.[1];
