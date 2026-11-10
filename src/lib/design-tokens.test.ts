@@ -38,7 +38,7 @@ describe("Atoll Atlas design kit", () => {
   });
 
   it("keeps raw hex colours in tokens, not in primitives or the global stylesheet", () => {
-    expect(kit).not.toMatch(/#[0-9a-fA-F]{3,8}\\b/);
+    expect(kit).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
     expect(globals).not.toMatch(/#[0-9a-fA-F]{3,8}\\b/);
   });
 
