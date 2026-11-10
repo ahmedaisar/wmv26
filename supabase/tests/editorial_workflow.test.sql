@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(16);
+select plan(18);
 
 select ok(
   to_regclass('public.article_status_events') is not null,
@@ -62,6 +62,15 @@ select ok(
   'authenticated users can call transition RPC subject to RLS and role checks'
 );
 
+select ok(
+  not has_function_privilege('anon', 'public.current_app_role()', 'EXECUTE'),
+  'anonymous users cannot call the authenticated role helper'
+);
+
+select ok(
+  has_function_privilege('authenticated', 'public.current_app_role()', 'EXECUTE'),
+  'authenticated role helper remains available to trusted role-checking RPCs'
+);
 
 select ok(
   to_regprocedure('public.create_article_draft(text,text,uuid,text,jsonb,public.article_type,public.article_disclosure,uuid,text,text)') is not null,
@@ -90,7 +99,6 @@ select ok(
   ),
   'authenticated users can call create draft RPC subject to role checks'
 );
-
 
 select ok(
   not has_table_privilege('authenticated', 'public.articles', 'INSERT'),
