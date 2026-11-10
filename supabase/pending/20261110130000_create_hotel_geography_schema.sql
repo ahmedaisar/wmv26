@@ -114,6 +114,17 @@ create table public.properties (
         and published_by is not null
         and atoll_id is not null
         and island_id is not null
+        and is_active = true
+      )
+    ),
+  constraint properties_published_active_geography
+    check (
+      status <> 'published'
+      or (
+        exists (
+          select 1 from public.atolls as atoll
+          where atoll.id = atoll_id and atoll.is_active
+        )
       )
     )
 );
@@ -339,8 +350,19 @@ begin
     or v_property.verified_by is null
     or v_property.atoll_id is null
     or v_property.island_id is null
+    or not v_property.is_active
+    or not exists (
+      select 1 from public.atolls as atoll
+      where atoll.id = v_property.atoll_id and atoll.is_active
+    )
+    or not exists (
+      select 1 from public.islands as island
+      where island.id = v_property.island_id
+        and island.atoll_id = v_property.atoll_id
+        and island.is_active
+    )
   ) then
-    raise exception 'Property must be verified and assigned to an island before publication' using errcode = '22023';
+    raise exception 'Property must be verified, active and assigned to an active island and atoll before publication' using errcode = '22023';
   end if;
 
   update public.properties
