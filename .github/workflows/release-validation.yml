@@ -29,7 +29,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm install --no-package-lock --no-audit --no-fund
+        run: npx --yes npm@11 install --no-package-lock --no-audit --no-fund
 
       - name: Assert server-only Supabase boundary
         run: |
