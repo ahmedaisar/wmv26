@@ -7,19 +7,23 @@
 - article_tags: many-to-many article taxonomy.
 - article_revisions: append-only snapshots written by trusted server-side workflows.
 
-Article body is JSONB so the editor can store a structured rich-text document. Search uses a generated English tsvector from title and excerpt. The public API does not receive internal author profile IDs, creator/reviewer/publisher IDs, scheduled timestamps or search vector through anonymous column grants.
+Article body is JSONB so the editor can store a structured rich-text document. Search uses a generated English tsvector from title and excerpt. Public pages select only published article fields; the browser never queries the Supabase Data API.
 
 ## State model
-draft → in_review → approved → scheduled → published → archived. The author may submit their own draft for review. Editors/admins own review, approval, scheduling, publication and archival transitions. The database currently constrains direct author updates to draft/in_review and editor/admin updates to the full record. Workflow transitions should be implemented through validated Server Actions/RPCs with revision and audit writes.
+draft → in_review → approved → scheduled → published → archived. The author may submit their own draft for review. Editors/admins own review, approval, scheduling, publication and archival transitions. Workflow transitions use a validated server action and the server-only transition RPC with revision/status-event writes.
 
-## Access model
-- Anonymous: active authors/categories/tags and published articles only.
+## Server access model
+- Browser: no Supabase client, key, direct API query or database access.
+- Public visitors: server-rendered routes return active authors/categories/tags and published articles only. Server query helpers hard-code publication and active-state filters.
+- Staff: server validates the Supabase Auth access token, reads the authoritative profile role, then performs explicitly authorized server-side operations.
 - Contributor/journalist: own articles; create drafts; edit own draft and submit for review.
 - Editor/admin: read and manage all editorial records.
 - Commercial: no access to editorial drafts by default.
-- Revisions: authenticated users may read revisions only for articles visible to them; append is restricted to own drafts or editor/admin actions. No update/delete grants are issued.
+- Revisions: private server-side data; never returned to an unauthorized role. No update/delete path is exposed.
 
-RLS is enabled on every table. Table grants and column-level public grants are intentionally explicit. Future Server Actions must re-check role and record scope; UI hiding is not a security control.
+The application server uses a server-only Supabase secret key that bypasses RLS. Treat every use as privileged: public query helpers must constrain visibility, and staff mutations must re-check the verified actor, role, ownership and state. UI hiding is not a security control.
 
-## Important implementation boundary
-This migration has not been applied to a hosted Supabase project. Run it locally with the Supabase CLI, inspect policies and test anon/authenticated roles before linking or pushing to a hosted database. Use explicit public article column selections in application queries.
+## Database posture and rollout
+The target posture is RLS enabled on every application table with zero policies, no schema/table/type/sequence/function privileges for `PUBLIC`, `anon` or `authenticated`, and explicit grants to `service_role`. The only SECURITY DEFINER function in the application schema is the auth-user profile trigger, pinned to an empty search path.
+
+The deny-all migration is staged at `supabase/pending/20261110120000_server_only_access_boundary.sql` and applied to a disposable local database in CI. Hosted Supabase still has its previous grants/policies until a separately reviewed, explicitly approved CLI promotion. No hosted migration has been applied by this change.
