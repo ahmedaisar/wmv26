@@ -1,22 +1,13 @@
-import { z } from "zod";
+import "server-only";
 
-const supabaseServerEnvSchema = z.object({
-  url: z.string().url("SUPABASE_URL must be a valid URL"),
-  secretKey: z.string().min(1, "SUPABASE_SECRET_KEY is required"),
-});
+import { parseSupabaseServerEnv } from "@/lib/env-schema";
 
-export type SupabaseServerEnv = z.infer<typeof supabaseServerEnvSchema>;
+export { parseSupabaseServerEnv } from "@/lib/env-schema";
+export type { SupabaseServerEnv } from "@/lib/env-schema";
 
-export function parseSupabaseServerEnv(input: {
-  url?: string;
-  secretKey?: string;
-}): SupabaseServerEnv {
-  return supabaseServerEnvSchema.parse(input);
-}
-
-export function getSupabaseServerEnv(): SupabaseServerEnv {
+export function getSupabaseServerEnv() {
   return parseSupabaseServerEnv({
-    // Keep the URL-only legacy fallback during the environment transition.
+    // The URL-only legacy fallback is safe to retain during environment migration.
     url: process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL,
     secretKey: process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY,
   });
