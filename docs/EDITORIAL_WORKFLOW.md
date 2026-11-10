@@ -1,0 +1,18 @@
+# Editorial workflow
+
+## State transitions
+- Journalist/contributor: draft → in_review for an article they created.
+- Editor/admin: in_review → draft (changes requested) or approved.
+- Editor/admin: approved → scheduled (future timestamp) or published.
+- Editor/admin: scheduled → approved (cancel schedule) or published once due.
+- Editor/admin: published → archived.
+
+There is no direct contributor publication, no direct draft-to-published transition and no anonymous state mutation.
+
+## Atomic transition RPC
+The transition_article function runs with caller privileges (SECURITY INVOKER), locks the article row, checks the caller's profile role and ownership, validates the transition, appends a revision snapshot, updates the article and writes an immutable status event in one transaction. It is executable by authenticated users only; RLS and role checks remain in force.
+
+The RPC is the only supported state-transition path for the application. Future Server Actions must call it rather than writing the status column directly. Article content edits remain a separate validated update operation and must create a revision before committing.
+
+## Scheduled publishing
+This migration validates due times and allows an editor/admin to publish a due scheduled article. Automatic publication at the scheduled time requires a later trusted scheduler/cron integration. Until then, scheduled records remain scheduled and need an authorized publish action after the due time.
