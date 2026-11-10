@@ -25,6 +25,15 @@ jobs:
       - name: Install dependencies
         run: npx --yes npm@11 install --no-audit --no-fund
 
+      - name: Assert server-only Supabase boundary
+        run: |
+          if grep -R -nE 'NEXT_PUBLIC_SUPABASE_(ANON|PUBLISHABLE)_KEY|@supabase/ssr|createSupabaseBrowserClient' src; then
+            echo "Browser Supabase access or a public Supabase key was found."
+            exit 1
+          fi
+          test ! -e src/lib/supabase/client.ts
+          grep -q '^import "server-only";' src/lib/supabase/server.ts
+
       - name: Lint
         run: npm run lint
 
