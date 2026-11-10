@@ -17,6 +17,7 @@ export function ArticleCard({ article, featured = false }: { article: PublishedA
               alt={article.hero_image_alt ?? ""}
               className="object-cover transition-transform duration-700 group-hover:scale-[1.025]"
               fill
+              unoptimized
               sizes={featured ? "(max-width: 768px) 100vw, 60vw" : "(max-width: 768px) 100vw, 33vw"}
               src={article.hero_image_url}
             />
