@@ -1,0 +1,86 @@
+name: Release validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-validation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  application:
+    name: Full application validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm install --no-package-lock --no-audit --no-fund
+
+      - name: Assert server-only Supabase boundary
+        run: |
+          if grep -R -nE 'NEXT_PUBLIC_SUPABASE_(ANON|PUBLISHABLE)_KEY|@supabase/ssr|createSupabaseBrowserClient' src; then
+            echo "Browser Supabase access or a public Supabase key was found."
+            exit 1
+          fi
+          test ! -e src/lib/supabase/client.ts
+          grep -q '^import "server-only";' src/lib/supabase/server.ts
+          grep -q '^import "server-only";' src/lib/env.ts
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+
+  database:
+    name: Full local Supabase validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Start local Supabase
+        run: npx --yes supabase@2 start --exclude studio,edge-runtime,logflare,vector
+
+      - name: Reset local database from migrations
+        run: npx --yes supabase@2 db reset
+
+      - name: Apply staged server-only boundary SQL locally
+        run: |
+          DB_CONTAINER="$(docker ps --format '{{.Names}}' | grep '^supabase_db_' | head -n 1)"
+          test -n "$DB_CONTAINER"
+          docker exec -i "$DB_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < supabase/pending/20261110120000_server_only_access_boundary.sql
+
+      - name: Run pgTAP
+        run: npx --yes supabase@2 test db
+
+      - name: Stop local Supabase
+        if: always()
+        run: npx --yes supabase@2 stop --no-backup || true
