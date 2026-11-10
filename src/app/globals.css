@@ -10,6 +10,8 @@
   --paper: var(--color-paper);
   --ink: var(--color-ink);
   --muted: var(--color-muted);
+  --surface-soft: var(--color-surface-soft);
+  --lagoon-wash: var(--color-lagoon-wash);
   --background: var(--color-paper);
   --foreground: var(--color-ink);
 }
@@ -20,7 +22,7 @@
   --color-sand: var(--sand);
   --color-paper: var(--paper);
   --color-ink: var(--ink);
-  --color-muted: var(--muted);\n  --color-surface-soft: var(--color-surface-soft);\n  --color-lagoon-wash: var(--color-lagoon-wash);
+  --color-muted: var(--muted);\n  --color-surface-soft: var(--surface-soft);\n  --color-lagoon-wash: var(--lagoon-wash);
   --font-display: var(--type-display);
   --font-body: var(--type-body);
 }
