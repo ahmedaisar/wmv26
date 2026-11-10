@@ -67,7 +67,10 @@ jobs:
         run: npx --yes supabase@2 db reset
 
       - name: Apply staged server-only boundary migration locally
-        run: npx --yes supabase@2 db query --db-url "postgresql://postgres:postgres@127.0.0.1:54322/postgres" --file supabase/pending/20261110120000_server_only_access_boundary.sql
+        run: |
+          DB_CONTAINER="$(docker ps --format '{{.Names}}' | grep '^supabase_db_' | head -n 1)"
+          test -n "$DB_CONTAINER"
+          docker exec -i "$DB_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < supabase/pending/20261110120000_server_only_access_boundary.sql
 
       - name: Run database policy and workflow tests
         run: npx --yes supabase@2 test db
