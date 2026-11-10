@@ -95,6 +95,15 @@ create table public.properties (
         and verification_source_url ~* '^https?://'
       )
     ),
+  constraint properties_verification_status
+    check (
+      status not in ('verified', 'published', 'archived')
+      or (verified_at is not null and verified_by is not null)
+    ),
+  constraint properties_official_url
+    check (official_website_url is null or official_website_url ~* '^https?://'),
+  constraint properties_booking_url
+    check (booking_url is null or booking_url ~* '^https?://'),
   constraint properties_published_requirements
     check (
       status <> 'published'
@@ -149,7 +158,7 @@ create table public.property_media (
   media_url text,
   alt_text text not null check (length(trim(alt_text)) > 0),
   credit text,
-  source_url text,
+  source_url text check (source_url is null or source_url ~* '^https?://'),
   sort_order integer not null default 0,
   focal_x numeric(5,4) not null default 0.5 check (focal_x between 0 and 1),
   focal_y numeric(5,4) not null default 0.5 check (focal_y between 0 and 1),
