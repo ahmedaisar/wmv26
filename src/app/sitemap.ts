@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/site-url";
-import { getPublicProperties } from "@/lib/properties";
+import { getPublicAtolls, getPublicIslands, getPublicProperties } from "@/lib/properties";
 
 const publicRoutes = [
   "/",
@@ -20,6 +20,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: route === "/" ? "daily" : "weekly",
     priority: route === "/" ? 1 : 0.7,
   }));
+
+  const [atolls, islands] = await Promise.all([getPublicAtolls(), getPublicIslands()]);
+  for (const atoll of atolls) {
+    entries.push({ url: new URL(`/atolls/${atoll.slug}`, siteUrl).toString(), changeFrequency: "monthly", priority: 0.6 });
+  }
+  for (const island of islands) {
+    entries.push({ url: new URL(`/islands/${island.slug}`, siteUrl).toString(), changeFrequency: "monthly", priority: 0.5 });
+  }
 
   const firstPage = await getPublicProperties({ page: 1, pageSize: 48 });
   for (const property of firstPage.properties) {
