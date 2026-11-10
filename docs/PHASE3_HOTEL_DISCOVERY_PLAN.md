@@ -1,6 +1,6 @@
 # Phase 3 — Hotel and destination discovery implementation plan
 
-**Status:** Phase 3A schema implementation in PR #15; SQL is staged for local/release validation only, with no hosted data changed  
+**Status:** PR #15 contains the Phase 3A staged schema; PR #16 adds the server-only public directory read model. Both are stacked before any public screens; SQL remains staged and no hosted data changed  
 **Product plan:** `docs/IMPLEMENTATION_PLAN.md`, Phase 3  
 **Gap baseline:** `docs/IMPLEMENTATION_GAP_REVIEW.md`, Gate 2
 
