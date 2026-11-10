@@ -7,6 +7,10 @@ alter default privileges for role postgres
 alter default privileges for role postgres
   revoke all on sequences from public, anon, authenticated;
 alter default privileges for role postgres
+  revoke usage on types from public, anon, authenticated;
+alter default privileges for role postgres
+  grant usage on types to service_role;
+alter default privileges for role postgres
   revoke execute on functions from public, anon, authenticated;
 
 do $$
@@ -47,6 +51,12 @@ begin
   end loop;
 end;
 $$;
+
+revoke all on schema public from public, anon, authenticated;
+grant usage on schema public to service_role;
+
+revoke all on all types in schema public from public, anon, authenticated;
+grant usage on all types in schema public to service_role;
 
 revoke all on all sequences in schema public from public, anon, authenticated;
 grant usage, select, update on all sequences in schema public to service_role;
