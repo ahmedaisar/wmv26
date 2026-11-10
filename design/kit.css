@@ -14,7 +14,7 @@
 
 .wm-display {
   color: var(--color-ocean);
-  font-family: var(--font-display);
+  font-family: var(--type-display);
   font-size: var(--font-size-display);
   font-weight: var(--weight-medium);
   letter-spacing: -0.055em;
@@ -109,6 +109,7 @@
   background: linear-gradient(145deg, var(--color-lagoon-wash), var(--color-sand));
 }
 .wm-property-media img { width: 100%; height: 100%; object-fit: cover; }
+.wm-property-media--image { background-image: var(--property-image); background-position: center; background-size: cover; }
 .wm-property-media--empty {
   display: grid;
   place-items: center;
