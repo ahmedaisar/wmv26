@@ -33,6 +33,7 @@ jobs:
           fi
           test ! -e src/lib/supabase/client.ts
           grep -q '^import "server-only";' src/lib/supabase/server.ts
+          grep -q '^import "server-only";' src/lib/env.ts
 
       - name: Lint
         run: npm run lint
