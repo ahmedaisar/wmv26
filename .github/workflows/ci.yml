@@ -83,3 +83,32 @@ jobs:
           TASTE_TYPE: reddit
           TASTE_MOMENT: '1'
         run: bash scripts/taste-deal.sh software saas
+
+
+  taste-public-design:
+    name: Taste Skill public editorial art-direction deal
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feat/public-editorial-experience'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Deal the public publisher direction
+        env:
+          TASTE_MOMENT: '1'
+        run: |
+          bash scripts/taste-deal.sh service agency | tee /tmp/wmv-public-taste-deal.txt
+          mkdir -p .taste-skill
+          cp /tmp/wmv-public-taste-deal.txt .taste-skill/public-editorial-deal.txt
+
+      - name: Upload dealt direction
+        uses: actions/upload-artifact@v4
+        with:
+          name: taste-public-editorial-deal
+          path: .taste-skill/public-editorial-deal.txt
