@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(22);
+select plan(26);
 
 select ok(
   to_regclass('public.article_status_events') is not null,
@@ -119,6 +119,93 @@ select ok(
 
 drop table public.__default_table_probe;
 drop function public.__default_execute_probe();
+
+-- Exercise the invoker RPC as the only application database role allowed to call it.
+do $
+declare
+  v_actor_one uuid := gen_random_uuid();
+  v_actor_two uuid := gen_random_uuid();
+  v_author_id uuid;
+  v_article_id uuid;
+begin
+  perform set_config('test.actor_one', v_actor_one::text, true);
+  perform set_config('test.actor_two', v_actor_two::text, true);
+
+  insert into auth.users (
+    id, aud, role, email, encrypted_password, email_confirmed_at,
+    raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+  )
+  values
+    (v_actor_one, 'authenticated', 'authenticated', v_actor_one::text || '@example.test', '', now(), '{}'::jsonb, '{}'::jsonb, now(), now()),
+    (v_actor_two, 'authenticated', 'authenticated', v_actor_two::text || '@example.test', '', now(), '{}'::jsonb, '{}'::jsonb, now(), now());
+
+  insert into public.authors (profile_id, slug, display_name)
+  values (v_actor_one, 'pgtap-server-boundary-author', 'pgTAP Server Boundary Author')
+  returning id into v_author_id;
+
+  insert into public.articles (slug, title, author_id, created_by)
+  values ('pgtap-server-boundary-article', 'Server boundary integration test', v_author_id, v_actor_one)
+  returning id into v_article_id;
+
+  perform set_config('test.article_id', v_article_id::text, true);
+end;
+$;
+
+set local role service_role;
+do $
+begin
+  perform set_config(
+    'test.transition_result',
+    public.transition_article(
+      current_setting('test.actor_one')::uuid,
+      current_setting('test.article_id')::uuid,
+      'in_review'::public.article_status
+    )::text,
+    true
+  );
+end;
+$;
+reset role;
+
+select is(
+  current_setting('test.transition_result'),
+  'in_review',
+  'server role can submit its own contributor draft for review'
+);
+
+select is(
+  (select count(*)::integer from public.article_revisions
+   where article_id = current_setting('test.article_id')::uuid),
+  1,
+  'successful transition writes one revision atomically'
+);
+
+select is(
+  (select count(*)::integer from public.article_status_events
+   where article_id = current_setting('test.article_id')::uuid),
+  1,
+  'successful transition writes one status event atomically'
+);
+
+set local role service_role;
+do $
+begin
+  begin
+    perform public.transition_article(
+      current_setting('test.actor_two')::uuid,
+      current_setting('test.article_id')::uuid,
+      'approved'::public.article_status
+    );
+    raise exception 'expected contributor ownership denial' using errcode = 'P0001';
+  exception
+    when sqlstate '42501' then
+      null;
+  end;
+end;
+$;
+reset role;
+
+select ok(true, 'server transition rejects a different contributor acting on another author draft');
 
 select * from finish();
 
