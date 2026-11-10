@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(21);
+select plan(22);
 
 select ok(
   to_regclass('public.article_status_events') is not null,
@@ -98,6 +98,11 @@ as $$ select 1 $$;
 select ok(
   not has_function_privilege('anon', 'public.__default_execute_probe()', 'EXECUTE'),
   'new public functions do not grant execute to anon by default'
+);
+
+select ok(
+  not has_function_privilege('authenticated', 'public.__default_execute_probe()', 'EXECUTE'),
+  'new public functions do not grant execute to authenticated by default'
 );
 
 create table public.__default_table_probe (id integer primary key);
