@@ -62,3 +62,24 @@ jobs:
       - name: Stop local Supabase
         if: always()
         run: npx --yes supabase@latest stop --no-backup || true
+
+  taste-design:
+    name: Taste Skill art-direction deal
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feat/editorial-admin'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run pinned Taste Skill deal
+        env:
+          TASTE_PALETTE: cool-white-slate
+          TASTE_TYPE: reddit
+          TASTE_MOMENT: '1'
+        run: bash scripts/taste-deal.sh software saas
