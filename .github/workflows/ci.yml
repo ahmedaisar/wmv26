@@ -51,17 +51,17 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Start local Supabase
-        run: npx --yes supabase@latest start --exclude studio,edge-runtime,logflare,vector
+        run: npx --yes supabase@2 start --exclude studio,edge-runtime,logflare,vector
 
       - name: Apply migrations from a clean database
-        run: npx --yes supabase@latest db reset
+        run: npx --yes supabase@2 db reset
 
       - name: Run database policy and workflow tests
-        run: npx --yes supabase@latest test db
+        run: npx --yes supabase@2 test db
 
       - name: Stop local Supabase
         if: always()
-        run: npx --yes supabase@latest stop --no-backup || true
+        run: npx --yes supabase@2 stop --no-backup || true
 
   taste-design:
     name: Taste Skill art-direction deal
