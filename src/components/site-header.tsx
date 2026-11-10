@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   { href: "/news", label: "News" },
-  { href: "/hotels", label: "Hotels & Resorts" },
+  { href: "/hotels", label: "Atoll Atlas" },
   { href: "/destinations", label: "Destinations" },
   { href: "/guides", label: "Travel Guides" },
   { href: "/industry", label: "Industry" },
