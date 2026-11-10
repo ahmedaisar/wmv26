@@ -14,9 +14,9 @@ async function hydrate(rows: ArticleRow[]): Promise<PublishedArticle[]> {
   const authorIds = [...new Set(rows.map((row) => row.author_id))];
   const categoryIds = [...new Set(rows.flatMap((row) => row.category_id ? [row.category_id] : []))];
   const [authorResult, categoryResult] = await Promise.all([
-    supabase.from("authors").select("id,slug,display_name,bio,avatar_url").in("id", authorIds),
+    supabase.from("authors").select("id,slug,display_name,bio,avatar_url").in("id", authorIds).eq("is_active", true),
     categoryIds.length
-      ? supabase.from("categories").select("id,slug,name").in("id", categoryIds)
+      ? supabase.from("categories").select("id,slug,name").in("id", categoryIds).eq("is_active", true)
       : Promise.resolve({ data: [], error: null }),
   ]);
   const authors = new Map((authorResult.data ?? []).map((item) => [item.id, item]));
