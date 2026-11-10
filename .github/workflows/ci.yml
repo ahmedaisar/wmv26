@@ -164,7 +164,7 @@ jobs:
         run: npx --yes npm@11 install --no-audit --no-fund
 
       - name: Start local Supabase
-        run: npx --yes supabase@latest start --exclude studio,edge-runtime,logflare,vector
+        run: npx --yes supabase@latest start --exclude studio,edge-runtime,logflare,vector,inbucket
 
       - name: Apply migrations
         run: npx --yes supabase@latest db reset
