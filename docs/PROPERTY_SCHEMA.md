@@ -46,7 +46,7 @@ Because the application server uses a Supabase secret key that bypasses RLS, pub
 - Property media: review_status = approved.
 - Never select private verification notes, assigned staff, internal status events or private contact fields into public page props.
 
-All tables have RLS enabled with zero policies; anon and authenticated have no direct grants. service_role is granted the application privileges required by the server. These rules are asserted by pgTAP in supabase/tests/hotel_discovery.test.sql.
+The target schema enables RLS with zero policies and grants no direct table access to anon or authenticated; service_role receives only the server privileges required by the app. These grants are applied in the staged local-only migration and are not yet applied to hosted Supabase. The local posture is asserted by pgTAP in supabase/tests/hotel_discovery.test.sql.
 
 ## Storage and data sourcing
 No Storage bucket is created by this migration. Uploads are a later, separately reviewed slice. storage_path reserves a durable object path; external media_url is accepted only as HTTP(S) and still requires review approval. Do not seed atoll/island names, classifications, coordinates, facilities, ratings or property facts until the owner approves canonical sources. Unknown values remain null.
