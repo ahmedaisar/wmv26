@@ -7,9 +7,7 @@ alter default privileges for role postgres
 alter default privileges for role postgres
   revoke all on sequences from public, anon, authenticated;
 alter default privileges for role postgres
-  revoke execute on functions from public;
-alter default privileges for role postgres in schema public
-  revoke execute on functions from anon, authenticated;
+  revoke execute on functions from public, anon, authenticated;
 
 do $$
 declare
@@ -58,13 +56,13 @@ revoke all on all functions in schema public from public, anon, authenticated;
 -- The old helper relied on auth.uid() inside Postgres. User JWTs are no longer
 -- sent to PostgREST; the server verifies identity with the Auth API and passes
 -- the verified actor id to this service-role-only invoker RPC.
-drop function if exists public.current_app_role();
 drop function if exists public.transition_article(
   uuid,
   public.article_status,
   timestamptz,
   text
 );
+drop function if exists public.current_app_role();
 
 create function public.transition_article(
   p_actor_id uuid,
