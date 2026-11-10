@@ -19,14 +19,14 @@ export default async function HomePage() {
   return (
     <main>
       <SiteHeader />
-      <section className="mx-auto grid min-h-[620px] max-w-[1440px] grid-cols-1 gap-12 px-6 pb-20 pt-16 md:grid-cols-[0.92fr_1.08fr] md:items-center md:px-12 md:pt-20">
+      <section className="wm-shell wm-home-hero">
         <div className="flex flex-col justify-center">
-          <p className="mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-lagoon">THE MALDIVES · THE ATOLL ATLAS</p>
-          <h1 className="max-w-[660px] text-[clamp(3.4rem,7vw,6.8rem)] font-medium leading-[0.91] tracking-[-0.065em] text-ocean">Find your place in the islands.</h1>
-          <p className="mt-8 max-w-[470px] text-base leading-8 text-muted md:text-lg">A considered guide to verified resorts, hotels and guesthouses across the Maldives, one atoll at a time.</p>
-          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
-            <form action="/hotels" className="mt-2 flex w-full max-w-xl flex-col gap-3 sm:flex-row" method="get"><label className="sr-only" htmlFor="atlas-search">Search a property, island or atoll</label><input className="wm-input min-w-0 flex-1" id="atlas-search" name="q" placeholder="Search a property name" type="search" /><button className="wm-button" type="submit">Explore stays <span aria-hidden="true">↗</span></button></form>
-            <Link className="mt-4 w-fit border-b border-ocean/30 pb-2 text-sm transition-colors hover:border-lagoon hover:text-lagoon" href="/news">Read the latest stories</Link>
+          <p className="wm-eyebrow">THE MALDIVES · THE ATOLL ATLAS</p>
+          <h1 className="wm-home-title">Find your place in the islands.</h1>
+          <p className="wm-home-intro">A considered guide to verified resorts, hotels and guesthouses across the Maldives, one atoll at a time.</p>
+          <div className="wm-home-actions">
+            <form action="/hotels" className="wm-home-search" method="get"><label className="sr-only" htmlFor="atlas-search">Search a property, island or atoll</label><input className="wm-input min-w-0 flex-1" id="atlas-search" name="q" placeholder="Search a property name" type="search" /><button className="wm-button" type="submit">Explore stays <span aria-hidden="true">↗</span></button></form>
+            <Link className="wm-link mt-2 w-fit text-sm" href="/news">Read the latest stories</Link>
           </div>
         </div>
         <div aria-label="Abstract topographic composition inspired by the Maldives atolls" className="wm-atlas-illustration relative isolate min-h-[390px] overflow-hidden md:min-h-[550px]" role="img">
@@ -34,7 +34,7 @@ export default async function HomePage() {
           <div className="wm-atlas-ring wm-atlas-ring--one absolute" />
           <div className="wm-atlas-ring wm-atlas-ring--two absolute" />
           <div className="wm-atlas-ring wm-atlas-ring--three absolute" />
-          <div className="absolute bottom-7 left-7 text-[10px] font-medium uppercase tracking-[0.24em] text-white">Indian Ocean · Maldives</div>
+          <div className="wm-atlas-caption">Indian Ocean · Maldives</div>
         </div>
       </section>
 
