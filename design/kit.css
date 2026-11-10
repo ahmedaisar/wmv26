@@ -110,6 +110,7 @@
 }
 .wm-property-media img { width: 100%; height: 100%; object-fit: cover; }
 .wm-property-media--image { background-image: var(--property-image); background-position: center; background-size: cover; }
+.wm-property-image-layer { position: absolute; inset: 0; display: block; }
 .wm-property-media--empty {
   display: grid;
   place-items: center;
