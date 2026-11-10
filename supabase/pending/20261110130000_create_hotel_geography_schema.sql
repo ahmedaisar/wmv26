@@ -159,11 +159,14 @@ create table public.property_media (
   created_by uuid not null references public.profiles(id) on delete restrict,
   created_at timestamptz not null default now(),
   constraint property_media_source
-    check (storage_path is not null or media_url ~* '^https?://'),
+    check (storage_path is not null or (media_url is not null and media_url ~* '^https?://')),
   constraint property_media_review_pair
     check ((reviewed_at is null) = (reviewed_by is null)),
   constraint property_media_review_state
-    check (review_status = 'pending' or (reviewed_at is not null and reviewed_by is not null))
+    check (
+      (review_status = 'pending' and reviewed_at is null and reviewed_by is null)
+      or (review_status <> 'pending' and reviewed_at is not null and reviewed_by is not null)
+    )
 );
 
 create table public.property_verification_events (
