@@ -21,19 +21,19 @@ export default async function HomePage() {
       <SiteHeader />
       <section className="mx-auto grid min-h-[620px] max-w-[1440px] grid-cols-1 gap-12 px-6 pb-20 pt-16 md:grid-cols-[0.92fr_1.08fr] md:items-center md:px-12 md:pt-20">
         <div className="flex flex-col justify-center">
-          <p className="mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-lagoon">The Maldives. Beyond the Ordinary.</p>
-          <h1 className="max-w-[660px] text-[clamp(3.4rem,7vw,6.8rem)] font-medium leading-[0.91] tracking-[-0.065em] text-ocean">A closer look at the islands.</h1>
-          <p className="mt-8 max-w-[470px] text-base leading-8 text-muted md:text-lg">Independent travel stories, hospitality news and thoughtful discovery from across the Maldives.</p>
+          <p className="mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-lagoon">THE MALDIVES · THE ATOLL ATLAS</p>
+          <h1 className="max-w-[660px] text-[clamp(3.4rem,7vw,6.8rem)] font-medium leading-[0.91] tracking-[-0.065em] text-ocean">Find your place in the islands.</h1>
+          <p className="mt-8 max-w-[470px] text-base leading-8 text-muted md:text-lg">A considered guide to verified resorts, hotels and guesthouses across the Maldives, one atoll at a time.</p>
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
-            <Link className="border-b border-ocean pb-2 font-medium text-ocean transition-colors hover:border-lagoon hover:text-lagoon" href="/news">Explore the latest stories <span aria-hidden="true">↗</span></Link>
-            <Link className="border-b border-ocean/30 pb-2 transition-colors hover:border-lagoon hover:text-lagoon" href="/hotels">Discover places to stay</Link>
+            <form action="/hotels" className="mt-2 flex w-full max-w-xl flex-col gap-3 sm:flex-row" method="get"><label className="sr-only" htmlFor="atlas-search">Search a property, island or atoll</label><input className="wm-input min-w-0 flex-1" id="atlas-search" name="q" placeholder="Search a property name" type="search" /><button className="wm-button" type="submit">Explore stays <span aria-hidden="true">↗</span></button></form>
+            <Link className="mt-4 w-fit border-b border-ocean/30 pb-2 text-sm transition-colors hover:border-lagoon hover:text-lagoon" href="/news">Read the latest stories</Link>
           </div>
         </div>
-        <div aria-label="Abstract topographic composition inspired by the Maldives atolls" className="relative isolate min-h-[390px] overflow-hidden bg-[#d9e7e2] md:min-h-[550px]" role="img">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_48%_46%,#f5f0df_0%,#e4e9d8_19%,#a9c9bd_20%,#7daea7_39%,#477f83_60%,#17495b_100%)]" />
-          <div className="absolute -left-[15%] top-[12%] h-[78%] w-[130%] rotate-[-19deg] rounded-[48%] border border-white/45" />
-          <div className="absolute -left-[7%] top-[22%] h-[62%] w-[116%] rotate-[-19deg] rounded-[48%] border border-white/40" />
-          <div className="absolute left-[12%] top-[34%] h-[42%] w-[75%] rotate-[-19deg] rounded-[48%] border border-white/35" />
+        <div aria-label="Abstract topographic composition inspired by the Maldives atolls" className="wm-atlas-illustration relative isolate min-h-[390px] overflow-hidden md:min-h-[550px]" role="img">
+          <div className="wm-atlas-water absolute inset-0" />
+          <div className="wm-atlas-ring wm-atlas-ring--one absolute" />
+          <div className="wm-atlas-ring wm-atlas-ring--two absolute" />
+          <div className="wm-atlas-ring wm-atlas-ring--three absolute" />
           <div className="absolute bottom-7 left-7 text-[10px] font-medium uppercase tracking-[0.24em] text-white">Indian Ocean · Maldives</div>
         </div>
       </section>
