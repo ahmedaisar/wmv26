@@ -19,9 +19,9 @@ export function PropertyCard({ property }: { property: PublicProperty }) {
     <article className="wm-property-card">
       <Link className="wm-property-media" href={`/hotels/${property.slug}`} aria-label={`View ${property.name}`}>
         {imageUrl ? (
-          <span aria-label={image?.alt_text || property.name} className="wm-property-media wm-property-media--image" role="img" style={{ "--property-image": `url("${imageUrl}")` } as React.CSSProperties} />
+          <span aria-label={image?.alt_text || property.name} className="wm-property-image-layer wm-property-media--image" role="img" style={{ "--property-image": `url("${imageUrl}")` } as React.CSSProperties} />
         ) : (
-          <span aria-label="Property image not yet available" className="wm-property-media wm-property-media--empty" role="img" />
+          <span aria-label="Property image not yet available" className="wm-property-image-layer wm-property-media--empty" role="img" />
         )}
       </Link>
       <div className="grid gap-3 p-5">
