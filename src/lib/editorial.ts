@@ -34,13 +34,6 @@ export type PublishedArticle = Pick<
   category: Pick<CategoryRow, "slug" | "name"> | null;
 };
 
-const articleColumns = [
-  "id", "slug", "title", "excerpt", "body", "article_type", "disclosure",
-  "author_id", "category_id", "seo_title", "seo_description", "canonical_url",
-  "published_at", "is_featured", "hero_image_url", "hero_image_alt",
-  "hero_image_credit", "reading_time_minutes", "created_at", "updated_at",
-].join(",");
-
 export function isEditorialConfigured() {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -77,7 +70,7 @@ export async function getPublishedArticles(limit = 12): Promise<PublishedArticle
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
-    .select(articleColumns)
+    .select("id,slug,title,excerpt,body,article_type,disclosure,author_id,category_id,seo_title,seo_description,canonical_url,published_at,is_featured,hero_image_url,hero_image_alt,hero_image_credit,reading_time_minutes,created_at,updated_at")
     .eq("status", "published")
     .lte("published_at", new Date().toISOString())
     .order("published_at", { ascending: false })
@@ -92,7 +85,7 @@ export async function getPublishedArticleBySlug(slug: string): Promise<Published
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
-    .select(articleColumns)
+    .select("id,slug,title,excerpt,body,article_type,disclosure,author_id,category_id,seo_title,seo_description,canonical_url,published_at,is_featured,hero_image_url,hero_image_alt,hero_image_credit,reading_time_minutes,created_at,updated_at")
     .eq("slug", slug)
     .eq("status", "published")
     .lte("published_at", new Date().toISOString())
