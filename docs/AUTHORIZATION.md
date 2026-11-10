@@ -21,8 +21,8 @@ admin, editor, journalist, contributor and commercial. Permissions for each feat
 - Sign-in return path is constrained to same-origin relative paths.
 
 ## Database boundary
-- Application tables keep RLS enabled with zero policies.
-- `anon` and `authenticated` have no application table/sequence/function grants.
+- The target posture is RLS enabled with zero policies on application tables, and no `anon`/`authenticated` table, sequence or function grants.
+- The grant-revocation migration is staged under `supabase/pending/` and tested against local Supabase in CI. It has not been applied to hosted databases; legacy grants and policies remain there until a separately approved promotion.
 - The server's secret key is the only application credential that bypasses RLS and accesses application tables.
 - The auth-user trigger may insert the initial contributor profile. The trigger function is SECURITY DEFINER with an empty search path; it is the only application-schema definer function.
 - `transition_article` is an invoker function granted only to `service_role`; it verifies the supplied actor against `profiles`, checks the role/ownership/state transition and records revision/status history atomically.
