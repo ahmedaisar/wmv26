@@ -14,6 +14,13 @@ alter default privileges for role postgres in schema public
 alter default privileges for role postgres in schema public
   grant usage, select, update on sequences to service_role;
 
+-- PostgreSQL grants EXECUTE on new functions and USAGE on new types to PUBLIC
+-- globally by default. A schema-local REVOKE cannot subtract those global grants.
+alter default privileges for role postgres
+  revoke execute on functions from public, anon, authenticated;
+alter default privileges for role postgres
+  revoke usage on types from public, anon, authenticated;
+
 alter default privileges for role postgres in schema public
   revoke usage on types from public, anon, authenticated;
 alter default privileges for role postgres in schema public
