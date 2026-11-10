@@ -42,7 +42,7 @@ export default async function PropertyPage({ params }: Props) {
         </nav>
       </div>
       <section className="wm-shell pb-14">
-        <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+        <div className="wm-property-heading">
           <div>
             <p className="wm-eyebrow">{property.property_type} · {property.atoll.name}</p>
             <h1 className="wm-display mt-4">{property.name}</h1>
@@ -54,7 +54,7 @@ export default async function PropertyPage({ params }: Props) {
             {bookingUrl ? <a className="wm-button wm-button--quiet" href={bookingUrl} rel="noopener noreferrer nofollow" target="_blank">Booking information <span aria-hidden="true">↗</span></a> : null}
           </div>
         </div>
-        <div className="mt-10 grid gap-4 md:grid-cols-[1.35fr_0.65fr]">
+        <div className="wm-property-gallery">
           {hero && heroUrl ? (
             <div aria-label={hero.alt_text || property.name} className="wm-gallery-main" role="img" style={{ "--property-image": `url("${heroUrl}")` } as React.CSSProperties}>
               {hero.credit ? <span className="wm-gallery-credit">{hero.credit}</span> : null}
@@ -73,7 +73,7 @@ export default async function PropertyPage({ params }: Props) {
       </section>
 
       <section className="border-y border-sand bg-white">
-        <div className="wm-shell grid gap-12 py-12 md:grid-cols-[1fr_0.65fr] md:py-16">
+        <div className="wm-shell wm-property-content py-12 md:py-16">
           <div>
             <p className="wm-eyebrow">About this place</p>
             <h2 className="wm-title mt-3 text-3xl">A stay in {property.island.name}.</h2>
