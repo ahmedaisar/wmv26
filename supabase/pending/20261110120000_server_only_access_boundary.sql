@@ -2,6 +2,8 @@
 -- Application queries now use the server secret key; browser/API roles have no
 -- direct table or function privileges and RLS remains enabled as deny-all.
 
+begin;
+
 alter default privileges for role postgres
   revoke all on tables from public, anon, authenticated;
 alter default privileges for role postgres
