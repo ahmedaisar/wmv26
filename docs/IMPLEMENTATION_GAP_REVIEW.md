@@ -2,8 +2,8 @@
 
 **Reviewed:** 10 November 2026  
 **Repository:** https://github.com/ahmedaisar/wmv26  
-**Main baseline:** `1cc7c2e2b569370b0ae9edae66aab4a0c3c021a0`  
-**Open implementation PR:** [#8 — Editorial admin workspace](https://github.com/ahmedaisar/wmv26/pull/8), head `a13d42dcff2238ccddd7cadffc3948ec5f400a7f`.
+**Main baseline:** `43bd56caf25bf413a37f3ada127d132265bbf032`  
+**Open implementation PRs:** [#8 — Editorial admin workspace](https://github.com/ahmedaisar/wmv26/pull/8) and [#14 — Server-only Supabase boundary](https://github.com/ahmedaisar/wmv26/pull/14).
 
 This review compares `docs/PRD.md` and `docs/IMPLEMENTATION_PLAN.md` with the actual route tree, migrations, open PRs and connected Supabase state. It is a code/document inventory, not a claim that every page has been browser-tested.
 
@@ -12,17 +12,20 @@ This review compares `docs/PRD.md` and `docs/IMPLEMENTATION_PLAN.md` with the ac
 The current product is an **editorial foundation**, not yet the full Maldives media and discovery platform described in the PRD.
 
 On `main` today:
-- Public homepage, news listing and article detail.
+- Public homepage, news listing, article detail and category/tag/author discovery pages.
 - Supabase identity/profile and editorial data foundations.
 - Staff sign-in, role lookup and a minimal protected admin dashboard.
 - SEO metadata, robots and sitemap.
+- PR #12 delivered the public category/tag/author routes and was merged after its CI and Vercel preview passed.
 
-Open PR #8 adds:
+Open PR #8 proposes:
 - Article list, basic plaintext draft creation, article detail/revision listing, workflow actions, and author listing/creation.
-- A narrowly scoped draft RPC, direct-write privilege hardening, and anonymous helper-grant revocation.
+- A narrowly scoped draft RPC and direct-write privilege hardening.
+- Its old JWT/RLS migrations and actions are not merge-compatible with PR #14's server-only boundary and must be adapted before release.
+
+Open PR #14 moves application reads and auth behind a server-only Supabase client. Its deny-all database migration is staged outside the automatic migrations folder and is tested only on local CI until separately approved.
 
 Still absent:
-- Public category, tag and author pages.
 - Hotel/property directory and property detail pages.
 - Atoll, island and destination pages.
 - Experiences and guides pages.
@@ -37,16 +40,16 @@ Still absent:
 
 | Area | Observed state |
 |---|---|
-| `main` app routes | `/`, `/news`, `/news/[slug]`, `/admin`, `/admin/sign-in`, `/admin/access-denied`, `/robots.txt`, `/sitemap.xml` |
+| `main` app routes | `/`, `/news`, `/news/[slug]`, `/category/[slug]`, `/tag/[slug]`, `/authors/[slug]`, `/admin`, `/admin/sign-in`, `/admin/access-denied`, `/robots.txt`, `/sitemap.xml` |
 | PR #8 additional routes | `/admin/articles`, `/admin/articles/new`, `/admin/articles/[id]`, `/admin/authors`, `/admin/authors/new` |
 | Main migrations | Profile, editorial schema, editorial workflow, article presentation |
 | PR #8 migrations | Draft RPC, RPC-only editorial writes, revoke anon execute on `current_app_role()` |
 | Hosted Supabase | Active/healthy, eight public tables: profiles, authors, categories, tags, articles, article_tags, article_revisions, article_status_events |
 | Hosted Supabase Storage | Zero buckets |
-| Open feature PRs | PR #8 only |
+| Open feature PRs | PR #8 editorial admin; PR #14 server-only Supabase boundary |
 | Production deployment | READY after site URL fallback fix |
 | Latest admin preview | READY for PR #8 head `a13d42d` |
-| Latest PR #8 CI | Passed: lint/typecheck/tests/build, clean local migration reset/pgTAP, Taste editorial design deal |
+| Latest PR #12 CI | Passed: lint/typecheck/tests/build and clean local migration reset/pgTAP; Vercel preview READY |
 
 **Release boundary:** the hosted database has not been migrated with PR #8's three pending admin migrations. A READY preview is not proof of live staff sign-in or authenticated admin operations. Do not apply hosted migrations until the exact target and rollout are reviewed.
 
@@ -57,9 +60,9 @@ Still absent:
 | `/` | Public homepage with discovery links and latest stories | Implemented; partial modules |
 | `/news` | Published listing with lead story, grid and empty state | Implemented; pagination/category filter not yet present |
 | `/news/[slug]` | Article, byline, disclosure, SEO and body rendering | Implemented; related content/share limited |
-| `/category/[slug]` | No route | Missing |
-| `/tag/[slug]` | No route | Missing |
-| `/authors/[slug]` | No route | Missing |
+| `/category/[slug]` | Published-only category route with canonical metadata and article cards (PR #12) | Implemented; browser visual gate not recorded |
+| `/tag/[slug]` | Published-only tag route with canonical metadata and article cards (PR #12) | Implemented; browser visual gate not recorded |
+| `/authors/[slug]` | Active author profile with published articles and canonical metadata (PR #12) | Implemented; browser visual gate not recorded |
 | `/hotels` | Homepage link only | Missing |
 | `/hotels/[slug]` | No route | Missing |
 | `/destinations` | Homepage link only | Missing |
@@ -99,7 +102,7 @@ Still absent:
 
 1. **Phase 0 (product foundation):** complete enough; the original foundation PR is merged.
 2. **Phase 1 (application foundation):** substantially complete; bootstrap, Supabase clients, auth, CI and production hosting exist.
-3. **Phase 2 (Editorial MVP):** not complete. PR #8 only closes part of the admin gap. Public category/tag/author routes, full article editing, media management, complete revisions and authenticated end-to-end release evidence remain.
+3. **Phase 2 (Editorial MVP):** not complete. PR #12 completed public category/tag/author routes. PR #8 only closes part of the admin gap and must be adapted to PR #14's server-only access model. Full article editing, media management, complete revisions and authenticated end-to-end release evidence remain.
 4. **Phase 3 (Hotel and destination discovery):** not started. Core schema, reference geography, property management, public listing/profile, destination pages, filters and enquiry flow are missing.
 5. **Phase 4 (Audience and intelligence):** not started. Consent, newsletter lifecycle, analytics and sourced tourism data do not exist.
 6. **Phase 5 (Monetization):** not started. Advertiser/campaign records, media kit, sponsored placements and reporting do not exist.
@@ -107,18 +110,18 @@ Still absent:
 ## Recommended implementation sequence
 
 ### Gate 0 — Close editorial admin safely (PR #8)
-- Complete PR #8 integration against corrected `main` and keep its full CI green.
-- Review SECURITY DEFINER RPCs, grants, RLS and the transition matrix.
+- Rebase and adapt PR #8 to the server-only Supabase client/session helpers from PR #14 before reconsidering merge.
+- Review all RPC grants, RLS, actor verification and the transition matrix; do not retain old `auth.uid()` assumptions after user JWTs stop reaching PostgREST.
 - Apply the three pending admin migrations only after the hosted target and rollout are explicitly reviewed.
 - Provision one editor and one contributor account through the trusted operator process.
 - Test sign-in, denied roles, private draft creation, author scope, review, approval and publishing against hosted Supabase.
 - Restore the Taste browser visual gate and capture desktop/mobile screenshots; the Taste art-direction deal is not that browser gate.
-- Correct stale docs that describe the transition RPC as SECURITY INVOKER or direct table writes.
+- Keep the hosted grant-revocation migration staged until the server-only application is deployed and a separately approved DB promotion is ready.
 
 **Exit:** authenticated editorial publishing works end-to-end; anonymous users cannot access drafts; role checks pass; production preview and SEO are verified.
 
 ### Gate 1 — Finish the editorial product slice
-1. Public category, tag and author routes with published-only queries, canonical metadata and pagination.
+1. Public category, tag and author routes are implemented by PR #12; still add pagination and visual/accessibility proof.
 2. Article editing with structured block editor, safe preview, revision compare/restore and attribution.
 3. Media library foundation: public published assets vs private draft uploads, MIME/size validation, alt text, photographer/credit and focal position.
 4. Category and tag administration, taxonomy assignment and related content.
