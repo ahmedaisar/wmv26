@@ -5,7 +5,7 @@ Premium Maldives travel media and discovery platform.
 **Positioning:** The Maldives. Beyond the Ordinary.
 
 ## Stack
-Next.js App Router, TypeScript, Tailwind CSS and (in the next foundation phase) Supabase for data, authentication and media.
+Next.js App Router, TypeScript, Tailwind CSS and Supabase (Postgres, Auth and Storage). The public editorial foundation and staff identity foundation are implemented. The editorial admin workspace remains under review; its additional hosted migrations and staff end-to-end verification are not yet released.
 
 ## Local development
 Requires Node.js 22+.
@@ -36,7 +36,7 @@ npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-fro
 The upstream workflow requires Node.js 22+ and Chrome, Edge or Chromium for browser inspection. Follow the installed skill's current project-start and visual-review instructions. PE MCP `ui-design` remains the governing product design workflow.
 
 ## Environment
-Copy `.env.example` to `.env.local`. Supabase values remain blank until a project is provisioned. Never commit real secrets. A service-role key, if later required, must remain server-only.
+Copy `.env.example` to `.env.local`. Use the connected Supabase project's public URL and anon key in local development. Never commit real secrets. A service-role key, if later required, must remain server-only.
 
 ## Project docs
 See `docs/` for the product baseline, proposal, requirements, architecture, design direction and implementation plan. All implementation changes are delivered through pull requests.
@@ -47,3 +47,5 @@ See `docs/EDITORIAL_SCHEMA.md` for the content tables, publishing states and dat
 See `docs/EDITORIAL_WORKFLOW.md` for the atomic article transition RPC and publication rules.
 
 Design workflow: see `docs/TASTE_SKILL.md` and run `bash scripts/taste-deal.sh software saas` for the admin app.
+
+CI currently runs lint, typecheck, unit tests, production build, a clean local Supabase migration reset, pgTAP and the configured Taste Skill art-direction deal. It does **not** run the Taste Skill browser visual gate. Browser validation and screenshots must be reported separately and must not be described as passing until actually run.

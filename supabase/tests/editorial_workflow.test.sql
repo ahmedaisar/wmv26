@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(8);
+select plan(18);
 
 select ok(
   to_regclass('public.article_status_events') is not null,
@@ -40,8 +40,8 @@ select ok(
 );
 
 select ok(
-  not (select prosecdef from pg_proc where oid = to_regprocedure('public.transition_article(uuid,public.article_status,timestamp with time zone,text)')),
-  'transition RPC runs with caller privileges'
+  (select prosecdef from pg_proc where oid = to_regprocedure('public.transition_article(uuid,public.article_status,timestamp with time zone,text)')),
+  'transition RPC runs with definer privileges after explicit role and ownership checks'
 );
 
 select ok(
@@ -60,6 +60,64 @@ select ok(
     'EXECUTE'
   ),
   'authenticated users can call transition RPC subject to RLS and role checks'
+);
+
+select ok(
+  not has_function_privilege('anon', 'public.current_app_role()', 'EXECUTE'),
+  'anonymous users cannot call the authenticated role helper'
+);
+
+select ok(
+  has_function_privilege('authenticated', 'public.current_app_role()', 'EXECUTE'),
+  'authenticated role helper remains available to trusted role-checking RPCs'
+);
+
+select ok(
+  to_regprocedure('public.create_article_draft(text,text,uuid,text,jsonb,public.article_type,public.article_disclosure,uuid,text,text)') is not null,
+  'create draft RPC exists'
+);
+
+select ok(
+  (select prosecdef from pg_proc where oid = to_regprocedure('public.create_article_draft(text,text,uuid,text,jsonb,public.article_type,public.article_disclosure,uuid,text,text)')),
+  'create draft RPC runs with definer privileges after explicit role and author checks'
+);
+
+select ok(
+  not has_function_privilege(
+    'anon',
+    'public.create_article_draft(text,text,uuid,text,jsonb,public.article_type,public.article_disclosure,uuid,text,text)',
+    'EXECUTE'
+  ),
+  'anonymous users cannot create article drafts'
+);
+
+select ok(
+  has_function_privilege(
+    'authenticated',
+    'public.create_article_draft(text,text,uuid,text,jsonb,public.article_type,public.article_disclosure,uuid,text,text)',
+    'EXECUTE'
+  ),
+  'authenticated users can call create draft RPC subject to role checks'
+);
+
+select ok(
+  not has_table_privilege('authenticated', 'public.articles', 'INSERT'),
+  'authenticated users cannot insert articles outside the draft RPC'
+);
+
+select ok(
+  not has_table_privilege('authenticated', 'public.articles', 'UPDATE'),
+  'authenticated users cannot bypass the transition RPC with direct updates'
+);
+
+select ok(
+  not has_table_privilege('authenticated', 'public.article_revisions', 'INSERT'),
+  'authenticated users cannot forge revision snapshots'
+);
+
+select ok(
+  not has_table_privilege('authenticated', 'public.article_status_events', 'INSERT'),
+  'authenticated users cannot forge status history events'
 );
 
 select * from finish();

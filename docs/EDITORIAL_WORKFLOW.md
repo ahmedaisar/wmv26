@@ -10,9 +10,9 @@
 There is no direct contributor publication, no direct draft-to-published transition and no anonymous state mutation.
 
 ## Atomic transition RPC
-The transition_article function runs with caller privileges (SECURITY INVOKER), locks the article row, checks the caller's profile role and ownership, validates the transition, appends a revision snapshot, updates the article and writes an immutable status event in one transaction. It is executable by authenticated users only; RLS and role checks remain in force.
+The `transition_article` function runs as `SECURITY DEFINER` because authenticated clients have no direct INSERT/UPDATE/DELETE privileges on articles and cannot insert revision snapshots or status events. It locks the article row and explicitly validates `auth.uid()`, the current profile role, ownership and the transition matrix before making its atomic changes. The `create_article_draft` RPC is similarly `SECURITY DEFINER` with explicit role, author and category checks; a missing profile is denied.
 
-The RPC is the only supported state-transition path for the application. Future Server Actions must call it rather than writing the status column directly. Article content edits remain a separate validated update operation and must create a revision before committing.
+These narrow RPCs are the only supported application mutation paths. Future Server Actions must call them rather than writing protected tables directly. A future content-edit RPC must validate scope and append a revision in the same transaction.
 
 ## Scheduled publishing
-This migration validates due times and allows an editor/admin to publish a due scheduled article. Automatic publication at the scheduled time requires a later trusted scheduler/cron integration. Until then, scheduled records remain scheduled and need an authorized publish action after the due time.
+The database validates due times and allows an editor/admin to publish a due scheduled article. Automatic publication at the scheduled time requires a later trusted scheduler/cron integration. Until then, scheduled records remain scheduled and need an authorized publish action after the due time.
