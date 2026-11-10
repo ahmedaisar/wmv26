@@ -1,6 +1,6 @@
 # Phase 3 — Hotel and destination discovery implementation plan
 
-**Status:** Phase 3A is implemented and merged in PRs #17 (schema) and #18 (public read model). Phase 3B design approval is the next gate; no public screens are implemented and no hosted data has changed  
+**Status:** Phase 3A is merged; PR #20 implements the owner-approved Atoll Atlas public discovery screens (hotel directory, property profiles and geography pages). Hosted Supabase remains unchanged  
 **Product plan:** `docs/IMPLEMENTATION_PLAN.md`, Phase 3  
 **Gap baseline:** `docs/IMPLEMENTATION_GAP_REVIEW.md`, Gate 2
 
