@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 const discoveryLinks = [
   { number: "01", title: "The latest", description: "Independent reporting and stories from across Maldives travel and hospitality.", href: "/news", label: "Read the stories" },
-  { number: "02", title: "Places to stay", description: "A considered guide to resorts, hotels and guesthouses across the atolls.", href: "/hotels", label: "Explore properties" },
+  { number: "02", title: "Atoll Atlas", description: "A considered guide to resorts, hotels and guesthouses across the atolls.", href: "/hotels", label: "Explore the atlas" },
   { number: "03", title: "Know the islands", description: "Destination guides, local perspectives and practical travel intelligence.", href: "/destinations", label: "Discover the islands" },
 ];
 
