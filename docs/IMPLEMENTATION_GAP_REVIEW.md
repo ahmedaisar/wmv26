@@ -2,7 +2,7 @@
 
 **Reviewed:** 11 November 2026  
 **Repository:** https://github.com/ahmedaisar/wmv26  
-**Main baseline:** `73e4cf2c9c152856d86a372780e8445be17a8234`  
+**Main baseline:** `576007a5f941715ccedc7065249f9c2b2e6fa6cb`  
 **Open implementation PRs:** Phase 3A PRs #17 and #18 are merged; Atoll Atlas public discovery is in progress in a feature PR.
 
 This review compares `docs/PRD.md` and `docs/IMPLEMENTATION_PLAN.md` with the actual route tree, migrations, open PRs and connected Supabase state. It is a code/document inventory, not a claim that every page has been browser-tested.
