@@ -3,7 +3,13 @@
   --color-ocean: #102f43;
   --color-lagoon: #17666d;
   --color-lagoon-wash: #e6f0ed;
+  --color-atoll-shallow: #dbe9e3;
+  --color-atoll-mid: #a9c9c0;
+  --color-atoll-deep: #467f87;
+  --color-ocean-overlay: rgb(16 47 67 / 0.86);
+  --color-white-overlay: rgb(255 255 255 / 0.55);
   --color-sand: #e9e2d4;
+  --color-sand-light: #c8ded6;
   --color-paper: #faf9f6;
   --color-white: #ffffff;
   --color-ink: #17232b;
@@ -13,8 +19,8 @@
   --color-focus: #145c78;
   --color-error: #9b352d;
 
-  --font-display: "Red Hat Display", "Red Hat Text", Arial, sans-serif;
-  --font-body: "Red Hat Text", Arial, Helvetica, sans-serif;
+  --type-display: "Red Hat Display", "Red Hat Text", Arial, sans-serif;
+  --type-body: "Red Hat Text", Arial, Helvetica, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
