@@ -2,12 +2,12 @@
 
 :root {
   color-scheme: light;
-  --ocean: #102f43;
-  --lagoon: #2c8991;
-  --sand: #e9e2d4;
-  --paper: #faf9f6;
-  --ink: #17232b;
-  --muted: #68747b;
+  --ocean: #1c1c1c;
+  --lagoon: #2c3620;
+  --sand: #87969d;
+  --paper: #a6b3bc;
+  --ink: #1c1c1c;
+  --muted: #4b5559;
   --background: var(--paper);
   --foreground: var(--ink);
 }
@@ -34,8 +34,12 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Red Hat Text", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Red Hat Display", "Red Hat Text", Arial, sans-serif;
 }
 
 a {
