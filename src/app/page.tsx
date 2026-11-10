@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const discoveryLinks = [
   {
     number: "01",
@@ -26,23 +28,23 @@ export default function HomePage() {
   return (
     <main>
       <header className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-6 md:px-12">
-        <a
+        <Link
           aria-label="WheresMaldives home"
           className="text-[11px] font-bold tracking-[0.24em] text-ocean"
           href="/"
         >
           WHERESMALDIVES
-        </a>
+        </Link>
         <nav aria-label="Main navigation" className="hidden items-center gap-8 text-sm md:flex">
-          <a className="transition-colors hover:text-lagoon" href="/news">News</a>
-          <a className="transition-colors hover:text-lagoon" href="/hotels">Hotels & Resorts</a>
-          <a className="transition-colors hover:text-lagoon" href="/destinations">Destinations</a>
-          <a className="transition-colors hover:text-lagoon" href="/guides">Travel Guides</a>
-          <a className="transition-colors hover:text-lagoon" href="/industry">Industry</a>
+          <Link className="transition-colors hover:text-lagoon" href="/news">News</Link>
+          <Link className="transition-colors hover:text-lagoon" href="/hotels">Hotels & Resorts</Link>
+          <Link className="transition-colors hover:text-lagoon" href="/destinations">Destinations</Link>
+          <Link className="transition-colors hover:text-lagoon" href="/guides">Travel Guides</Link>
+          <Link className="transition-colors hover:text-lagoon" href="/industry">Industry</Link>
         </nav>
-        <a className="text-sm underline underline-offset-4 hover:text-lagoon" href="/about">
+        <Link className="text-sm underline underline-offset-4 hover:text-lagoon" href="/about">
           About us
-        </a>
+        </Link>
       </header>
 
       <section className="mx-auto grid min-h-[650px] max-w-[1440px] grid-cols-1 gap-12 px-6 pb-24 pt-16 md:grid-cols-[0.92fr_1.08fr] md:items-center md:px-12 md:pt-20">
@@ -58,18 +60,18 @@ export default function HomePage() {
             from across the Maldives.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
-            <a
+            <Link
               className="border-b border-ocean pb-2 font-medium text-ocean transition-colors hover:border-lagoon hover:text-lagoon"
               href="/news"
             >
               Explore the latest stories <span aria-hidden="true">↗</span>
-            </a>
-            <a
+            </Link>
+            <Link
               className="border-b border-ocean/30 pb-2 transition-colors hover:border-lagoon hover:text-lagoon"
               href="/hotels"
             >
               Discover places to stay
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -83,7 +85,7 @@ export default function HomePage() {
           <div className="absolute -left-[7%] top-[22%] h-[62%] w-[116%] rotate-[-19deg] rounded-[48%] border border-white/40" />
           <div className="absolute left-[12%] top-[34%] h-[42%] w-[75%] rotate-[-19deg] rounded-[48%] border border-white/35" />
           <div className="absolute bottom-7 left-7 text-[10px] font-medium uppercase tracking-[0.24em] text-white">
-            Indian Ocean ·  Maldives
+            Indian Ocean · Maldives
           </div>
         </div>
       </section>
@@ -91,7 +93,7 @@ export default function HomePage() {
       <section aria-label="Explore WheresMaldives" className="border-t border-sand">
         <div className="mx-auto grid max-w-[1440px] grid-cols-1 md:grid-cols-3">
           {discoveryLinks.map((item) => (
-            <a
+            <Link
               key={item.number}
               className="group border-b border-sand p-8 transition-colors hover:bg-white md:border-b-0 md:border-r md:p-12 last:md:border-r-0"
               href={item.href}
@@ -106,7 +108,7 @@ export default function HomePage() {
               <span className="mt-9 inline-block text-xs font-semibold tracking-wide text-ocean transition-colors group-hover:text-lagoon">
                 {item.label} <span aria-hidden="true">↗</span>
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </section>
