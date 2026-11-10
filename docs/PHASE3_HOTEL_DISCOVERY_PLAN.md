@@ -18,9 +18,19 @@ This phase is not a booking engine. Do not model live room inventory, nightly ra
 - Combined validation passed: lint, typecheck, unit tests, production build, clean local Supabase reset, staged SQL application and 71 pgTAP assertions.
 - The SQL is still staged under `supabase/pending/`. Do not apply it to hosted Supabase without a separately reviewed target, backup/rollback plan and explicit owner approval.
 
-## Phase 3B — Design gate before public screens
+## Phase 3B — Atoll Atlas public property discovery
 
-The design direction must be reviewed before building the directory and destination routes. Preserve the existing Red Hat Display / Red Hat Text typography and the WheresMaldives ocean/lagoon brand vocabulary. The design work should compare two information architectures: (A) an atoll-first, photo-led directory with compact filters; (B) a geography-first field guide with a visible atoll/island filter index. The choice affects the primary navigation, hero, filter hierarchy and the balance between editorial storytelling and property discovery.
+**Owner decision, 11 November 2026:** Direction A — Atoll Atlas. The selected hierarchy is a photography-led, atoll-first hotel directory with prominent search and compact filters. See `design/README.md` for the approved visual direction and tokens.
+
+The first implementation slice ships `/hotels` and `/hotels/[slug]`, with URL-addressable filters, verified-only results, approved media, safe outbound links, metadata and sitemap entries. The public screens must not imply live prices, availability, ratings or endorsements. Where no verified property records are published, show an honest empty state; never seed fictional hotels.
+
+## Phase 3C — Destination discovery
+
+Build `/destinations`, `/atolls/[slug]` and `/islands/[slug]` after the hotel directory/profile slice is reviewed. The Atoll Atlas direction keeps the atoll as the top-level geography and lets visitors move from atoll to island to verified property.
+
+## Design approval evidence
+
+Direction A has been selected by the owner. Preserve the existing Red Hat Display / Red Hat Text typography and WheresMaldives ocean/lagoon brand vocabulary. The Figma artboard is a reference; the product kit in `design/tokens.css` and `design/kit.css` is the implementation source of truth.
 
 Acceptance for this gate:
 - Editable desktop and mobile screen specimens, not flattened screenshots.
@@ -28,7 +38,7 @@ Acceptance for this gate:
 - Directory, property profile and destination page structure.
 - Tokenized type, color, spacing, radius, elevation and motion foundations with contrast evidence.
 - Desktop and phone captures, loading/empty/error states, keyboard focus and reduced-motion notes.
-- Owner selects or combines a direction before implementation PRs begin.
+- Owner selection is recorded in `design/README.md`; remaining visual validation is completed against the running app before this stage is called done.
 
 ## Jobs and first public surfaces
 
