@@ -23,7 +23,7 @@
 
 .wm-title {
   color: var(--color-ocean);
-  font-family: var(--font-display);
+  font-family: var(--type-display);
   font-size: var(--font-size-2xl);
   font-weight: var(--weight-medium);
   letter-spacing: -0.035em;
@@ -115,8 +115,8 @@
   place-items: center;
   background:
     radial-gradient(ellipse at 48% 52%, var(--color-paper) 0 14%, transparent 15%),
-    radial-gradient(ellipse at 48% 52%, transparent 0 25%, rgb(255 255 255 / 0.55) 25.5% 26%, transparent 26.5%),
-    linear-gradient(135deg, #dbe9e3, #a9c9c0 48%, #467f87);
+    radial-gradient(ellipse at 48% 52%, transparent 0 25%, var(--color-white-overlay) 25.5% 26%, transparent 26.5%),
+    linear-gradient(135deg, var(--color-atoll-shallow), var(--color-atoll-mid) 48%, var(--color-atoll-deep));
 }
 .wm-property-media--empty::after {
   color: var(--color-white);
