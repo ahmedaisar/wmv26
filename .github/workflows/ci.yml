@@ -66,6 +66,9 @@ jobs:
       - name: Apply migrations from a clean database
         run: npx --yes supabase@2 db reset
 
+      - name: Apply staged server-only boundary migration locally
+        run: npx --yes supabase@2 db query --db-url "postgresql://postgres:postgres@127.0.0.1:54322/postgres" --file supabase/pending/20261110120000_server_only_access_boundary.sql
+
       - name: Run database policy and workflow tests
         run: npx --yes supabase@2 test db
 
