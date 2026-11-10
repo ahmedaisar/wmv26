@@ -33,6 +33,12 @@ a { color: inherit; text-decoration: none; }
 ::selection { background: var(--color-sand); color: var(--color-ocean); }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
 
+.wm-atlas-illustration { background: var(--color-atoll-deep); }
+.wm-atlas-water { background: radial-gradient(ellipse at 48% 46%, var(--color-paper) 0 8%, var(--color-sand-light) 9% 17%, var(--color-atoll-mid) 18% 38%, var(--color-atoll-deep) 68%, var(--color-ocean) 100%); }
+.wm-atlas-ring { border: 1px solid var(--color-white-overlay); border-radius: 48%; transform: rotate(-19deg); }
+.wm-atlas-ring--one { inset: 12% -15%; }
+.wm-atlas-ring--two { inset: 22% -7%; }
+.wm-atlas-ring--three { inset: 34% 12%; }
 .wm-filter-grid { display: grid; gap: var(--space-4); }
 .wm-filter-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 .wm-gallery-main { position: relative; min-height: 24rem; overflow: hidden; border-radius: var(--radius-lg); background-color: var(--color-surface-soft); background-position: center; background-size: cover; }
