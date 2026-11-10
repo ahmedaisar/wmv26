@@ -41,7 +41,7 @@ PRs for editorial schema/RLS; public home/editorial shell; article/category/tag/
 Exit: editors publish end-to-end; anonymous users cannot read drafts; metadata/sitemap validate; visual/accessibility checks pass.
 
 ## Phase 3 — Hotel and destination discovery
-PRs for atoll/island/property schema; hotel admin; profiles/galleries; directory/search/filters; destination pages; enquiries.
+PR #15 starts slice 3A with staged atoll/island/property/facility/media schema, provenance and server-only transition authorization. Remaining slices: public hotel directory/profiles, destination pages, staff property operations and enquiries.
 Exit: staff can verify properties; visitors can find properties; provenance retained; enquiry flow abuse-resistant.
 
 ## Phase 4 — Audience and intelligence
