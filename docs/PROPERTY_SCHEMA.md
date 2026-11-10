@@ -48,5 +48,8 @@ Because the application server uses a Supabase secret key that bypasses RLS, pub
 
 The target schema enables RLS with zero policies and grants no direct table access to anon or authenticated; service_role receives only the server privileges required by the app. These grants are applied in the staged local-only migration and are not yet applied to hosted Supabase. The local posture is asserted by pgTAP in supabase/tests/hotel_discovery.test.sql.
 
+## Server read model
+The server-only read helpers live in src/lib/properties.ts; URL/filter normalization is isolated in src/lib/property-filters.ts. They fail closed on malformed filters and select only published, active, verified properties whose atoll and island are active. Facility associations must be verified and facilities active; media must be approved and have an HTTP(S) media URL. Query failures are surfaced to the route error boundary rather than disguised as an empty directory.
+
 ## Storage and data sourcing
 No Storage bucket is created by this migration. Uploads are a later, separately reviewed slice. storage_path reserves a durable object path; external media_url is accepted only as HTTP(S) and still requires review approval. Do not seed atoll/island names, classifications, coordinates, facilities, ratings or property facts until the owner approves canonical sources. Unknown values remain null.
