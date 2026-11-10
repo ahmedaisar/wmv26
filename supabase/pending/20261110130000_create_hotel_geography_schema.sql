@@ -117,16 +117,6 @@ create table public.properties (
         and is_active = true
       )
     ),
-  constraint properties_published_active_geography
-    check (
-      status <> 'published'
-      or (
-        exists (
-          select 1 from public.atolls as atoll
-          where atoll.id = atoll_id and atoll.is_active
-        )
-      )
-    )
 );
 
 create table public.facilities (
