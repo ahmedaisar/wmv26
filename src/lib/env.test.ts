@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSupabaseServerEnv } from "./env";
+import { parseSupabaseServerEnv } from "./env-schema";
 
 describe("Supabase server environment", () => {
   it("accepts a project URL and server-only secret key", () => {
