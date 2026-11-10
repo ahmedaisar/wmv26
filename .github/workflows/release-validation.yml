@@ -5,6 +5,7 @@ on:
   schedule:
     - cron: "17 3 * * 1"
   push:
+    branches: ["release-validation/**"]
     tags: ["v*"]
 
 permissions:
