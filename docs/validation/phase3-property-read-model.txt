@@ -1,0 +1,1 @@
+One-off release validation snapshot for the Phase 3 property directory read model. This branch exists only to run the full application build, staged local Supabase migrations and pgTAP before merging the stacked feature PR. Do not merge this branch.
