@@ -41,7 +41,7 @@ export default async function HotelsPage({ searchParams }: { searchParams: Searc
     <main>
       <SiteHeader />
       <section className="bg-ocean text-white">
-        <div className="wm-shell grid gap-8 py-16 md:grid-cols-[1fr_0.72fr] md:items-end md:py-20">
+        <div className="wm-shell wm-atlas-intro py-16 md:py-20">
           <div>
             <p className="wm-eyebrow text-sand">The Atoll Atlas · Where to stay</p>
             <h1 className="mt-5 max-w-3xl font-display text-5xl font-medium leading-[0.98] tracking-[-0.055em] md:text-7xl">Find your place in the islands.</h1>
