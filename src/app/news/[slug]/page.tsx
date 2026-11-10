@@ -82,7 +82,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         {article.hero_image_url ? (
           <figure className="mt-12">
             <div className="relative aspect-[16/9] overflow-hidden bg-[#e2e9e4]">
-              <Image alt={article.hero_image_alt ?? ""} className="object-cover" fill priority sizes="(max-width: 1120px) 100vw, 1120px" src={article.hero_image_url} unoptimized />
+              <Image alt={article.hero_image_alt ?? ""} className="object-cover" fill priority sizes="(max-width: 1120px) 100vw, 1120px" unoptimized src={article.hero_image_url} unoptimized />
             </div>
             {article.hero_image_credit ? <figcaption className="mt-3 text-right text-[10px] text-muted">{article.hero_image_credit}</figcaption> : null}
           </figure>
