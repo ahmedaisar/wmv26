@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(28);
+select plan(30);
 
 select is(
   (select count(*)::integer
