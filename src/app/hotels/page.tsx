@@ -35,7 +35,7 @@ export default async function HotelsPage({ searchParams }: { searchParams: Searc
   ]);
 
   const pageCount = Math.max(1, Math.ceil(result.total / result.pageSize));
-  const currentPage = result.page;
+  const currentPage = Math.min(result.page, pageCount);
 
   return (
     <main>
@@ -43,7 +43,7 @@ export default async function HotelsPage({ searchParams }: { searchParams: Searc
       <section className="bg-ocean text-white">
         <div className="wm-shell grid gap-8 py-16 md:grid-cols-[1fr_0.72fr] md:items-end md:py-20">
           <div>
-            <p className="wm-eyebrow !text-[#b6d8d1]">The Atoll Atlas · Where to stay</p>
+            <p className="wm-eyebrow text-sand">The Atoll Atlas · Where to stay</p>
             <h1 className="mt-5 max-w-3xl font-display text-5xl font-medium leading-[0.98] tracking-[-0.055em] md:text-7xl">Find your place in the islands.</h1>
             <p className="mt-6 max-w-xl text-base leading-8 text-white/75">A considered guide to verified resorts, hotels and guesthouses across the Maldives, one atoll at a time.</p>
           </div>
@@ -55,9 +55,9 @@ export default async function HotelsPage({ searchParams }: { searchParams: Searc
       </section>
 
       <section className="wm-shell py-10 md:py-14">
-        <form action="/hotels" className="wm-panel grid gap-4 p-5 md:grid-cols-2 md:p-6 lg:grid-cols-[1.4fr_1fr_1fr_1fr_auto] lg:items-end" method="get">
+        <form action="/hotels" className="wm-panel wm-filter-grid p-5 md:p-6" method="get">
           <label className="wm-field lg:col-span-1">Search
-            <input className="wm-input" name="q" defaultValue={filters.search} placeholder="Property, island or atoll" type="search" />
+            <input className="wm-input" name="q" defaultValue={filters.search} placeholder="Search property name" type="search" />
           </label>
           <label className="wm-field">Atoll
             <select className="wm-select" name="atoll" defaultValue={filters.atollSlug}>
@@ -82,7 +82,7 @@ export default async function HotelsPage({ searchParams }: { searchParams: Searc
               {facilities.map((facility) => <option key={facility.id} value={facility.slug}>{facility.name}</option>)}
             </select>
           </label>
-          <div className="flex flex-wrap gap-3 md:col-span-2 lg:col-span-5">
+          <div className="wm-filter-actions">
             <button className="wm-button" type="submit">Explore stays <span aria-hidden="true">↗</span></button>
             <Link className="wm-button wm-button--quiet" href="/hotels">Clear filters</Link>
           </div>
