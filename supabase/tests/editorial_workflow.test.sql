@@ -145,7 +145,7 @@ drop table public.__default_table_probe;
 drop function public.__default_execute_probe();
 
 -- Exercise the invoker RPC as the only application database role allowed to call it.
-do $
+do $body$
 declare
   v_actor_one uuid := gen_random_uuid();
   v_actor_two uuid := gen_random_uuid();
@@ -173,10 +173,10 @@ begin
 
   perform set_config('test.article_id', v_article_id::text, true);
 end;
-$;
+$body$;
 
 set local role service_role;
-do $
+do $body$
 begin
   perform set_config(
     'test.transition_result',
@@ -188,7 +188,7 @@ begin
     true
   );
 end;
-$;
+$body$;
 reset role;
 
 select is(
@@ -212,7 +212,7 @@ select is(
 );
 
 set local role service_role;
-do $
+do $body$
 begin
   begin
     perform public.transition_article(
@@ -226,7 +226,7 @@ begin
       null;
   end;
 end;
-$;
+$body$;
 reset role;
 
 select ok(true, 'server transition rejects a different contributor acting on another author draft');
