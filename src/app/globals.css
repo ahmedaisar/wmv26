@@ -22,7 +22,9 @@
   --color-sand: var(--sand);
   --color-paper: var(--paper);
   --color-ink: var(--ink);
-  --color-muted: var(--muted);\n  --color-surface-soft: var(--surface-soft);\n  --color-lagoon-wash: var(--lagoon-wash);
+  --color-muted: var(--muted);
+  --color-surface-soft: var(--surface-soft);
+  --color-lagoon-wash: var(--lagoon-wash);
   --font-display: var(--type-display);
   --font-body: var(--type-body);
 }
