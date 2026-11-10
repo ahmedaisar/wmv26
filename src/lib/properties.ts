@@ -75,7 +75,8 @@ export async function getPublicAtolls(): Promise<PublicAtoll[]> {
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
-  return error || !data ? [] : data;
+  if (error) throw new Error("Unable to load the public atoll directory");
+  return data ?? [];
 }
 
 export async function getPublicIslands(atollSlug?: string): Promise<PublicIsland[]> {
@@ -88,7 +89,8 @@ export async function getPublicIslands(atollSlug?: string): Promise<PublicIsland
     .eq("is_active", true);
 
   const { data: atolls, error: atollsError } = await atollsQuery;
-  if (atollsError || !atolls?.length) return [];
+  if (atollsError) throw new Error("Unable to load active atolls");
+  if (!atolls?.length) return [];
 
   const normalizedAtollSlug = normalizePropertyDirectoryFilters({ atollSlug }).atollSlug;
   if (atollSlug?.trim() && !normalizedAtollSlug) return [];
@@ -106,7 +108,8 @@ export async function getPublicIslands(atollSlug?: string): Promise<PublicIsland
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
-  return error || !data ? [] : data;
+  if (error) throw new Error("Unable to load the public island directory");
+  return data ?? [];
 }
 
 export async function getPublicFacilities(): Promise<PublicFacility[]> {
@@ -119,7 +122,8 @@ export async function getPublicFacilities(): Promise<PublicFacility[]> {
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
-  return error || !data ? [] : data;
+  if (error) throw new Error("Unable to load the public facility directory");
+  return data ?? [];
 }
 
 export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
@@ -134,9 +138,10 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
     supabase.from("islands").select("id,atoll_id,name,slug,description,classification").eq("is_active", true),
   ]);
 
-  if (atollsResult.error || islandsResult.error || !atollsResult.data || !islandsResult.data) {
-    return emptyResult(filters.page, filters.pageSize);
+  if (atollsResult.error || islandsResult.error) {
+    throw new Error("Unable to load active property geography");
   }
+  if (!atollsResult.data || !islandsResult.data) return emptyResult(filters.page, filters.pageSize);
 
   const activeAtolls = filters.atollSlug
     ? atollsResult.data.filter((atoll) => atoll.slug === filters.atollSlug)
@@ -160,7 +165,8 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
       .eq("is_active", true)
       .maybeSingle();
 
-    if (facilityError || !facility) return emptyResult(filters.page, filters.pageSize);
+    if (facilityError) throw new Error("Unable to load the selected facility");
+    if (!facility) return emptyResult(filters.page, filters.pageSize);
 
     const { data: associations, error: associationError } = await supabase
       .from("property_facilities")
@@ -168,7 +174,8 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
       .eq("facility_id", facility.id)
       .eq("is_verified", true);
 
-    if (associationError || !associations?.length) return emptyResult(filters.page, filters.pageSize);
+    if (associationError) throw new Error("Unable to load verified property facilities");
+    if (!associations?.length) return emptyResult(filters.page, filters.pageSize);
     facilityPropertyIds = [...new Set(associations.map((association) => association.property_id))];
     if (!facilityPropertyIds.length) return emptyResult(filters.page, filters.pageSize);
   }
@@ -185,6 +192,7 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
     .in("island_id", activeIslandIds)
     .order("is_featured", { ascending: false })
     .order("published_at", { ascending: false })
+    .order("id", { ascending: true })
     .range(offset, offset + filters.pageSize - 1);
 
   if (filters.propertyType) query = query.eq("property_type", filters.propertyType);
@@ -193,7 +201,8 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
   if (facilityPropertyIds) query = query.in("id", facilityPropertyIds);
 
   const { data, error, count } = await query;
-  if (error || !data?.length) {
+  if (error) throw new Error("Unable to load the public property directory");
+  if (!data?.length) {
     return { ...emptyResult(filters.page, filters.pageSize), total: count ?? 0 };
   }
 
@@ -202,7 +211,8 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
     .from("property_facilities")
     .select("property_id,facility_id")
     .eq("is_verified", true)
-    .in("property_id", propertyIds);
+    .in("property_id", propertyIds)
+    .order("facility_id", { ascending: true });
 
   const facilityIds = [...new Set((associations ?? []).map((item) => item.facility_id))];
   const [facilitiesResult, mediaResult] = await Promise.all([
@@ -215,8 +225,13 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
       .eq("review_status", "approved")
       .not("media_url", "is", null)
       .in("property_id", propertyIds)
-      .order("sort_order", { ascending: true }),
+      .order("sort_order", { ascending: true })
+      .order("id", { ascending: true }),
   ]);
+
+  if (facilitiesResult.error || mediaResult.error) {
+    throw new Error("Unable to load verified property facilities and media");
+  }
 
   const atollMap = new Map(activeAtolls.map((atoll) => [atoll.id, atoll]));
   const islandMap = new Map(activeIslands.map((island) => [island.id, island]));
@@ -254,7 +269,9 @@ export async function getPublicProperties(input: PropertyDirectoryInput = {}) {
       ...property,
       atoll,
       island,
-      facilities: facilitiesByProperty.get(property.id) ?? [],
+      facilities: (facilitiesByProperty.get(property.id) ?? []).sort((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
       media: mediaByProperty.get(property.id) ?? [],
     }];
   });
