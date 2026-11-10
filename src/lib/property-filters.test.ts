@@ -35,12 +35,16 @@ describe("normalizePropertyDirectoryFilters", () => {
 
     expect(
       normalizePropertyDirectoryFilters({ atollSlug: "../private", islandSlug: "North Male" }),
-    ).toMatchObject({ atollSlug: null, islandSlug: null });
+    ).toMatchObject({ atollSlug: null, islandSlug: null, valid: false });
   });
 
   it("accepts only known property types", () => {
     expect(normalizePropertyDirectoryFilters({ propertyType: "resort" }).propertyType).toBe("resort");
-    expect(normalizePropertyDirectoryFilters({ propertyType: "villa" }).propertyType).toBeNull();
+    expect(normalizePropertyDirectoryFilters({ propertyType: "RESORT" }).propertyType).toBe("resort");
+    expect(normalizePropertyDirectoryFilters({ propertyType: "villa" })).toMatchObject({
+      propertyType: null,
+      valid: false,
+    });
   });
 
   it("trims, bounds and escapes search terms", () => {
