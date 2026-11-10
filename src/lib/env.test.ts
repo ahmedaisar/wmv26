@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSupabasePublicEnv } from "@/lib/env";
+import { parseSupabasePublicEnv } from "./env";
 
 describe("Supabase public environment", () => {
   it("accepts a project URL and anon key", () => {

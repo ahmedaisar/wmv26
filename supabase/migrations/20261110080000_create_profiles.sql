@@ -27,7 +27,7 @@ alter table public.profiles enable row level security;
 
 revoke all on table public.profiles from anon, authenticated;
 grant select on table public.profiles to authenticated;
-grant update (display_name, avatar_url, updated_at) on public.profiles to authenticated;
+grant update (display_name, avatar_url) on public.profiles to authenticated;
 
 create policy "profiles_select_own"
   on public.profiles
@@ -41,6 +41,23 @@ create policy "profiles_update_own"
   to authenticated
   using ((select auth.uid()) = id)
   with check ((select auth.uid()) = id);
+
+create function public.set_profile_updated_at()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+revoke all on function public.set_profile_updated_at() from public, anon, authenticated;
+
+create trigger set_profiles_updated_at
+  before update on public.profiles
+  for each row execute function public.set_profile_updated_at();
 
 create function public.current_app_role()
 returns public.app_role
@@ -80,4 +97,4 @@ revoke all on function public.handle_new_auth_user() from public, anon, authenti
 
 create trigger on_auth_user_created
   after insert on auth.users
-  for each row execute procedure public.handle_new_auth_user();
+  for each row execute function public.handle_new_auth_user();
