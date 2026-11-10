@@ -71,7 +71,7 @@ export type Database = {
       article_tags: {
         Row: { article_id: string; tag_id: string; created_at: string };
         Insert: { article_id: string; tag_id: string; created_at?: string };
-        Update: {};
+        Update: Record<string, never>;
         Relationships: EditorialRelationships;
       };
       article_revisions: {
