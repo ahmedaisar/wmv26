@@ -77,7 +77,7 @@ export type Database = {
       article_revisions: {
         Row: { id: string; article_id: string; revision_number: number; snapshot: Json; change_summary: string | null; created_by: string; created_at: string };
         Insert: { id?: string; article_id: string; revision_number: number; snapshot: Json; change_summary?: string | null; created_by: string; created_at?: string };
-        Update: {};
+        Update: Record<string, never>;
         Relationships: EditorialRelationships;
       };
     };
