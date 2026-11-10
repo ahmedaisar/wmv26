@@ -132,7 +132,7 @@ begin
   if
     p_to_status = 'published'
     and v_article.status = 'scheduled'
-    and v_article.scheduled_at > now()
+    and (v_article.scheduled_at is null or v_article.scheduled_at > now())
   then
     raise exception 'Scheduled publication time has not arrived' using errcode = '22023';
   end if;
