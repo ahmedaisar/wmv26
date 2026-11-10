@@ -2,7 +2,7 @@ create extension if not exists pgtap with schema extensions;
 
 begin;
 
-select plan(32);
+select plan(34);
 
 select ok(
   to_regclass('public.article_status_events') is not null,
@@ -49,6 +49,8 @@ select ok(not has_table_privilege('authenticated', 'public.profiles', 'select'),
 select ok(not has_table_privilege('anon', 'public.article_revisions', 'select'), 'anon cannot select revisions');
 select ok(has_table_privilege('service_role', 'public.articles', 'select'), 'server service role can select articles');
 select ok(has_table_privilege('service_role', 'public.profiles', 'select'), 'server service role can select profiles');
+select ok(has_function_privilege('service_role', 'public.set_profile_updated_at()', 'EXECUTE'), 'server role can execute profile update trigger');
+select ok(has_function_privilege('service_role', 'public.set_editorial_updated_at()', 'EXECUTE'), 'server role can execute editorial update trigger');
 
 select ok(
   to_regprocedure('public.transition_article(uuid,uuid,public.article_status,timestamp with time zone,text)') is not null,
