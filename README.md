@@ -47,3 +47,5 @@ See `docs/EDITORIAL_SCHEMA.md` for the content tables, publishing states and dat
 See `docs/EDITORIAL_WORKFLOW.md` for the atomic article transition RPC and publication rules.
 
 Design workflow: see `docs/TASTE_SKILL.md` and run `bash scripts/taste-deal.sh software saas` for the admin app.
+
+The editorial workspace CI also runs a pinned Taste Skill browser gate against the local sign-in route; the runner uses a sandbox-compatible Chrome wrapper and a clean local Supabase database.

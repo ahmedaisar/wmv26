@@ -15,24 +15,25 @@ if [[ ! -f "$SKILL_DIR/skills/taste-skill/scripts/start.mjs" ]]; then
   git -C "$SKILL_DIR" checkout --detach FETCH_HEAD
 fi
 
-node "$SKILL_DIR/skills/taste-skill/scripts/start.mjs" deal \
-  --page "$PAGE" \
-  --trade "$TRADE" \
-  --history .taste-skill/history.json
+if [[ "${TASTE_SKIP_DEAL:-}" != "1" ]]; then
+  node "$SKILL_DIR/skills/taste-skill/scripts/start.mjs" deal \
+    --page "$PAGE" \
+    --trade "$TRADE" \
+    --history .taste-skill/history.json
+fi
 
 if [[ -n "${TASTE_PALETTE:-}" && -n "${TASTE_TYPE:-}" ]]; then
-  node "$SKILL_DIR/skills/taste-skill/scripts/start.mjs" css \
-    --page "$PAGE" \
-    --palette "$TASTE_PALETTE" \
-    --type "$TASTE_TYPE" \
-    --radius soft \
-    --history .taste-skill/history.json
+  css_args=(css --page "$PAGE" --palette "$TASTE_PALETTE" --type "$TASTE_TYPE" --radius soft --history .taste-skill/history.json)
+  if [[ -n "${TASTE_AXIS:-}" ]]; then
+    css_args+=(--axis "$TASTE_AXIS")
+  fi
+  node "$SKILL_DIR/skills/taste-skill/scripts/start.mjs" "${css_args[@]}"
 fi
 
 if [[ "${TASTE_MOMENT:-}" == "1" ]]; then
   node "$SKILL_DIR/skills/taste-skill/scripts/moments.mjs" pick \
     --page "$PAGE" \
     --count 1 \
-    --fits section,statement \
+    --fits section \
     --history .taste-skill/history.json
 fi

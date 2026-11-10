@@ -97,6 +97,21 @@ export type Database = {
         Args: { p_article_id: string; p_to_status: ArticleStatus; p_scheduled_at?: string | null; p_note?: string | null };
         Returns: ArticleStatus;
       };
+      create_article_draft: {
+        Args: {
+          p_title: string;
+          p_slug: string;
+          p_author_id: string;
+          p_excerpt?: string | null;
+          p_body?: Json;
+          p_article_type?: ArticleType;
+          p_disclosure?: ArticleDisclosure;
+          p_category_id?: string | null;
+          p_seo_title?: string | null;
+          p_seo_description?: string | null;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       app_role: AppRole;
