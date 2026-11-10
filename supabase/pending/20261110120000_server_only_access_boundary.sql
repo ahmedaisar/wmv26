@@ -83,7 +83,8 @@ begin
   select profile.role
     into v_role
     from public.profiles as profile
-    where profile.id = p_actor_id;
+    where profile.id = p_actor_id
+    for share;
 
   if not found then
     raise exception 'Authentication required' using errcode = '28000';
@@ -97,6 +98,10 @@ begin
 
   if not found then
     raise exception 'Article not found or not accessible' using errcode = 'P0002';
+  end if;
+
+  if p_to_status is null then
+    raise exception 'A target status is required' using errcode = '22023';
   end if;
 
   if v_role in ('admin', 'editor') then
