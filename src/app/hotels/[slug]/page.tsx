@@ -30,7 +30,8 @@ export default async function PropertyPage({ params }: Props) {
   const officialUrl = safeExternalUrl(property.official_website_url);
   const bookingUrl = safeExternalUrl(property.booking_url);
   const hero = property.media[0];
-  const images = property.media.slice(1);
+  const heroUrl = safeExternalUrl(hero?.media_url);
+  const images = property.media.slice(1).filter((image) => safeExternalUrl(image.media_url));
 
   return (
     <main>
@@ -54,8 +55,8 @@ export default async function PropertyPage({ params }: Props) {
           </div>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-[1.35fr_0.65fr]">
-          {hero ? (
-            <div aria-label={hero.alt_text || property.name} className="wm-gallery-main" role="img" style={{ "--property-image": `url("${safeExternalUrl(hero.media_url)}")` } as React.CSSProperties}>
+          {hero && heroUrl ? (
+            <div aria-label={hero.alt_text || property.name} className="wm-gallery-main" role="img" style={{ "--property-image": `url("${heroUrl}")` } as React.CSSProperties}>
               {hero.credit ? <span className="wm-gallery-credit">{hero.credit}</span> : null}
             </div>
           ) : (
