@@ -1,9 +1,10 @@
 import type { PropertyDirectoryInput } from "@/lib/property-filters";
 
 export function safeExternalUrl(value: string | null | undefined): string | null {
-  if (!value) return null;
+  if (!value?.trim()) return null;
   try {
-    const url = new URL(value);
+    const url = new URL(value.trim());
+    if (url.username || url.password) return null;
     return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
   } catch {
     return null;
