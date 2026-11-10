@@ -56,6 +56,9 @@ jobs:
       - name: Apply migrations from a clean database
         run: npx --yes supabase@latest db reset
 
+      - name: Run database policy and workflow tests
+        run: npx --yes supabase@latest test db
+
       - name: Stop local Supabase
         if: always()
         run: npx --yes supabase@latest stop --no-backup || true

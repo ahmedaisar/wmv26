@@ -80,9 +80,21 @@ export type Database = {
         Update: Record<string, never>;
         Relationships: EditorialRelationships;
       };
+      article_status_events: {
+        Row: { id: string; article_id: string; from_status: ArticleStatus; to_status: ArticleStatus; actor_id: string; note: string | null; created_at: string };
+        Insert: { id?: string; article_id: string; from_status: ArticleStatus; to_status: ArticleStatus; actor_id: string; note?: string | null; created_at?: string };
+        Update: Record<string, never>;
+        Relationships: EditorialRelationships;
+      };
     };
     Views: Record<string, never>;
-    Functions: { current_app_role: { Args: Record<PropertyKey, never>; Returns: AppRole } };
+    Functions: {
+      current_app_role: { Args: Record<PropertyKey, never>; Returns: AppRole };
+      transition_article: {
+        Args: { p_article_id: string; p_to_status: ArticleStatus; p_scheduled_at?: string | null; p_note?: string | null };
+        Returns: ArticleStatus;
+      };
+    };
     Enums: {
       app_role: AppRole;
       article_status: ArticleStatus;
