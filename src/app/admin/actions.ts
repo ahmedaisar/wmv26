@@ -14,8 +14,12 @@ export async function signOut() {
   const accessToken = cookieStore.get(AUTH_ACCESS_COOKIE)?.value;
 
   if (accessToken) {
-    const supabase = createSupabaseServerClient();
-    await supabase.auth.admin.signOut(accessToken, "global");
+    try {
+      const supabase = createSupabaseServerClient();
+      await supabase.auth.admin.signOut(accessToken, "global");
+    } catch {
+      // Always clear the local browser session, even if remote revocation is unavailable.
+    }
   }
 
   cookieStore.delete(AUTH_ACCESS_COOKIE);
