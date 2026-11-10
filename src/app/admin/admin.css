@@ -664,6 +664,9 @@ body:has(.admin-sign-in-section) {
   width: 100%;
   justify-content: flex-start;
   gap: 34px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .admin-sign-in__moment .mo-mq__clone {
