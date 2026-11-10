@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublicPropertyBySlug } from "@/lib/properties";
 import { safeExternalUrl } from "@/lib/public-links";
-import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: property.name,
     description: property.summary || `Explore ${property.name} in ${property.island.name}, ${property.atoll.name}, Maldives.`,
     alternates: { canonical: `/hotels/${property.slug}` },
-    openGraph: { title: property.name, description: property.summary || undefined, images: property.media[0]?.media_url ? [property.media[0].media_url] : [] },
+    openGraph: { title: property.name, description: property.summary || undefined, images: safeExternalUrl(property.media[0]?.media_url) ? [safeExternalUrl(property.media[0]?.media_url)!] : [] },
   };
 }
 
@@ -33,7 +31,6 @@ export default async function PropertyPage({ params }: Props) {
   const bookingUrl = safeExternalUrl(property.booking_url);
   const hero = property.media[0];
   const images = property.media.slice(1);
-  const siteUrl = getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
   return (
     <main>
@@ -58,18 +55,16 @@ export default async function PropertyPage({ params }: Props) {
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-[1.35fr_0.65fr]">
           {hero ? (
-            <div className="relative min-h-[320px] overflow-hidden rounded-lg bg-surface-soft">
-              <Image alt={hero.alt_text || property.name} src={hero.media_url} fill priority sizes="(max-width: 768px) 100vw, 65vw" className="object-cover" />
-              {hero.credit ? <span className="absolute bottom-3 right-3 bg-ocean/80 px-3 py-1 text-xs text-white">{hero.credit}</span> : null}
+            <div aria-label={hero.alt_text || property.name} className="wm-gallery-main" role="img" style={{ "--property-image": `url("${safeExternalUrl(hero.media_url)}")` } as React.CSSProperties}>
+              {hero.credit ? <span className="wm-gallery-credit">{hero.credit}</span> : null}
             </div>
           ) : (
-            <div aria-label="Property photography will appear after approval" className="wm-property-media wm-property-media--empty min-h-[320px] rounded-lg" role="img" />
+            <div aria-label="Property photography will appear after approval" className="wm-gallery-main wm-property-media--empty" role="img" />
           )}
           <div className="grid gap-4">
             {images.length ? images.slice(0, 2).map((image) => (
-              <div className="relative min-h-[150px] overflow-hidden rounded-lg bg-surface-soft" key={image.id}>
-                <Image alt={image.alt_text || property.name} src={image.media_url} fill sizes="(max-width: 768px) 100vw, 35vw" className="object-cover" />
-                {image.credit ? <span className="absolute bottom-3 right-3 bg-ocean/80 px-3 py-1 text-xs text-white">{image.credit}</span> : null}
+              <div aria-label={image.alt_text || property.name} className="wm-gallery-small" key={image.id} role="img" style={{ "--property-image": `url("${safeExternalUrl(image.media_url)}")` } as React.CSSProperties}>
+                {image.credit ? <span className="wm-gallery-credit">{image.credit}</span> : null}
               </div>
             )) : <div className="wm-panel grid place-content-center p-8"><p className="wm-eyebrow">Property gallery</p><p className="wm-copy mt-3 text-sm">Approved photography will appear here when it is available.</p></div>}
           </div>
