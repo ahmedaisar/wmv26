@@ -28,3 +28,11 @@ if [[ -n "${TASTE_PALETTE:-}" && -n "${TASTE_TYPE:-}" ]]; then
     --radius soft \
     --history .taste-skill/history.json
 fi
+
+if [[ "${TASTE_MOMENT:-}" == "1" ]]; then
+  node "$SKILL_DIR/skills/taste-skill/scripts/moments.mjs" pick \
+    --page "$PAGE" \
+    --count 1 \
+    --fits section,statement \
+    --history .taste-skill/history.json
+fi
