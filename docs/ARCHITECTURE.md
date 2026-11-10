@@ -94,6 +94,9 @@ Start with PostgreSQL full-text search and indexed normalized fields. Results in
 ## Environments and secrets
 Use separate development and production Supabase projects. Server runtime variables: `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `NEXT_PUBLIC_SITE_URL`. `SUPABASE_SERVICE_ROLE_KEY` is accepted temporarily as a server-only legacy fallback. Never set a Supabase key with a `NEXT_PUBLIC_` prefix. Keep operator database URLs outside the repository; migrations are applied by the CLI to an explicitly named target, never through the MCP or an implicit linked project. No hosted migration is authorized by this change.
 
+## CI/CD delivery
+See `CI_CD.md` for the lightweight GitHub PR gate, Vercel-native Preview/Production deployment model, scheduled/release validation and branch-protection requirement.
+
 ## Observability
 Structured logs without secrets/PII, error monitoring, uptime checks, backups and tested restore, migrations in source control, alerts for email/publishing failures.
 
