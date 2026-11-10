@@ -82,8 +82,10 @@ Deferred commercial: `advertisers`, `campaigns`, `sponsored_placements`.
 
 Use UUID primary keys, normalized slugs, foreign keys, timestamps and workload-appropriate indexes. Hotel belongs to island; island belongs to atoll. Articles have authors, optional categories and many-to-many tags. Property verification source, timestamp and actor must be traceable. Unknown facts remain null.
 
-## RLS and grants
-All application tables have RLS enabled and zero policies. Revoke `PUBLIC`, `anon` and `authenticated` table/sequence/function grants and revoke the global default EXECUTE grant for newly created functions. Explicitly grant the server's `service_role` access needed by the application. The only SECURITY DEFINER function in the application schema is the auth-user trigger that creates the initial profile; it is pinned to an empty search path. Catalog and pgTAP tests pin this posture. Platform-owned grants are documented as platform debt rather than treated as application defaults.
+## RLS and grants — target posture
+After the staged deny-all migration is promoted, application tables have RLS enabled and zero policies. Revoke `PUBLIC`, `anon` and `authenticated` table/sequence/function/type grants, including both global and schema-specific default privileges. Explicitly grant the server's `service_role` the table, sequence, function and type privileges required by the application. The only SECURITY DEFINER function in the application schema is the auth-user trigger that creates the initial profile; it is pinned to an empty search path. Catalog and pgTAP tests pin this target posture.
+
+**Current hosted state:** the deny-all migration remains under `supabase/pending/` and has only been applied to disposable local CI. Hosted Supabase still has its previous anon/authenticated grants and RLS policies until a separately approved CLI promotion.
 
 ## Storage
 Storage is not yet configured. When introduced, use server-mediated uploads or narrowly scoped signed upload flows; validate MIME, size and path. Store alt text, source/credit, dimensions and focal position. Upload permission does not imply publish permission.
