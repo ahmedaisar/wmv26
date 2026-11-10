@@ -1,7 +1,7 @@
 # Supabase setup
 
 ## Scope
-This guide covers local Supabase setup, the server-only application client and staff authentication. Repository automation validates migrations against a disposable local database. It does not link or migrate a hosted project.
+This guide covers local Supabase setup, the server-only application client and staff authentication. Repository automation resets a disposable local database, applies the staged deny-all boundary SQL locally, and runs pgTAP. It does not link or migrate a hosted project.
 
 ## Prerequisites
 - Node.js 22+
@@ -23,7 +23,7 @@ The local Supabase stack is disposable development data. Never use production da
 - Do not add `NEXT_PUBLIC_SUPABASE_ANON_KEY` or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to the app environment.
 - Keep the CLI unlinked. Every hosted migration list/dry-run/apply command must name the target using that environment's operator-held `--db-url`; never use an implicit linked project.
 - Read the production migration ledger and dry-run before any promotion. Production migrations are applied only at release, immediately before promotion, after the owner's explicit go-ahead.
-- No hosted project migration or key rotation is authorized by this code change.
+- No hosted project migration or key rotation is authorized by this code change. The pending grant migration must be reviewed against the production ledger and applied by the CLI to an explicitly named target only after a separate owner go-ahead.
 
 ## Staff access
 Signup is disabled. Provision staff accounts through a trusted Supabase operator workflow, then verify the profiles row created by the auth trigger. New users default to contributor. Role elevation is an operator-only task until the admin user-management feature is implemented. Do not share credentials in issues or pull requests.
@@ -32,7 +32,7 @@ Signup is disabled. Provision staff accounts through a trusted Supabase operator
 - Browser: no Supabase client, key, API query or direct database access.
 - Server: one `server-only` Supabase client using the secret key, with session persistence disabled, no-store fetches and a bounded request timeout.
 - Auth tokens live only in HttpOnly cookies and are sent to Supabase Auth for verification/refresh, never as the PostgREST bearer credential.
-- Application tables have RLS enabled with zero policies and no grants to `anon` or `authenticated`. The server secret key is privileged; all public filters and staff authorization must therefore be enforced in server code.
+- The target database posture is RLS enabled with zero policies and no application-table grants to `anon` or `authenticated`. The migration is staged under `supabase/pending/`; hosted projects still retain their existing policies/grants until an owner-approved promotion. The server secret key is privileged; all public filters and staff authorization must therefore be enforced in server code.
 - The server-side authorization helper validates Supabase Auth identity and reads `profiles.role` from the database. Never trust client-supplied roles or auth metadata.
 
 ## Before production
