@@ -11,6 +11,7 @@ describe("safeExternalUrl", () => {
     expect(safeExternalUrl("javascript:alert(1)")).toBeNull();
     expect(safeExternalUrl("data:text/html,hello")).toBeNull();
     expect(safeExternalUrl("not a url")).toBeNull();
+    expect(safeExternalUrl("https://user:pass@example.com")).toBeNull();
     expect(safeExternalUrl(null)).toBeNull();
   });
 });
