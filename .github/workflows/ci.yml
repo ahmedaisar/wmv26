@@ -36,3 +36,26 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  database:
+    name: Apply Supabase migrations locally
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Start local Supabase
+        run: npx --yes supabase@latest start --exclude studio,edge-runtime,logflare,vector
+
+      - name: Apply migrations from a clean database
+        run: npx --yes supabase@latest db reset
+
+      - name: Stop local Supabase
+        if: always()
+        run: npx --yes supabase@latest stop --no-backup || true
