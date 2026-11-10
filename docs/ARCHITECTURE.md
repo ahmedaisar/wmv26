@@ -58,7 +58,7 @@ docs/
 - Revalidate public cache after authorized publish/unpublish/property changes.
 - Admin routes require a session and role.
 - Server Actions handle same-origin mutations; Route Handlers handle webhooks/external endpoints.
-- Validate each mutation with Zod, check role and record scope, and record sensitive actions.
+- Validate each mutation with Zod, check role and record scope, and record audit events.
 
 ## Supabase client boundaries
 Create separate browser and server user-context clients. User-scoped server operations must forward the authenticated session so RLS applies. A privileged server-only client may be used only for narrowly defined jobs that cannot run under user-scoped RLS. Never expose service-role credentials to client bundles. Prefer user-scoped operations and RLS over bypassing RLS.
@@ -107,3 +107,6 @@ Structured logs without secrets/PII, error monitoring, uptime checks, backups an
 
 ## Open technical decisions
 Confirm Supabase project/region, Vercel project/team/domain, newsletter and analytics providers, rich-text editor, image transformation/storage approach and staff role assignments.
+
+## Supabase implementation status
+The Supabase foundation now includes browser/server user-context clients, Zod-validated public environment values, local CLI configuration and a profile/role migration. No hosted project is linked and no remote migration has been applied. See `SUPABASE_SETUP.md` for local and hosted operator steps.
